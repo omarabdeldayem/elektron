@@ -110,13 +110,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\Other Stuff\proj\Matrix.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\Other Stuff\proj\Vector.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\Other Stuff\proj\Matrix.hpp" />
-    <ClInclude Include="..\..\..\..\..\Desktop\Other Stuff\proj\Vector.hpp" />
+    <ClInclude Include="Matrix.hpp" />
+    <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
