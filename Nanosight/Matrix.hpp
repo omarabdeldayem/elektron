@@ -2,28 +2,40 @@
 #define	MATRIX_H
 #endif 
 
-#include "Vector.hpp"
+#include <iostream>
+#include <vector>
 
 namespace nanos
 {
-	template <typename T>
+	template<typename T>
 	class Matrix
 	{
 	public:
-		Matrix(T** T_matrix, int r, int c);
+		Matrix();
+		Matrix(std::vector<std::vector<T>> T_matrix);
+		Matrix(T def_val, int r, int c);
+		Matrix(int r, int c);
+		
 
-		inline uint_fast16_t rdim();
-		inline uint_fast16_t cdim();
 
-		Matrix transpose();
-		Matrix ctranspose();
-		Matrix LUD();
-		Matrix QRD();
-		Matrix EigenD();
-		Matrix CholeskyD();
+		inline int rdim();
+		inline int cdim();
+		inline T elem(int r, int c);
+
+		//Matrix transpose();
+		//Matrix ctranspose();
+		//Matrix LUD();
+		//Matrix QRD();
+		//Matrix EigenD();
+		//Matrix CholeskyD();
+
+		void print();
 
 	private:
-		uint_fast16_t r_dim, c_dim;
+		std::vector<std::vector<T>> m;
+
+		int r_dim;
+		int c_dim;
 	};
 
 }
