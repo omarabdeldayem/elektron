@@ -11,23 +11,19 @@ namespace nanos
 	class Matrix
 	{
 	public:
-		Matrix();
 		Matrix(std::vector<std::vector<T>> T_matrix);
 		Matrix(T def_val, int r, int c);
-		Matrix(int r, int c);
 		
+		inline int rdim() { return r_dim; };
+		inline int cdim() { return c_dim; };
+		inline T elem(int r, int c) { return m[r][c]; };
+		inline void set_elem(T val, int r, int c) { m[r][c] = val; };
 
-
-		inline int rdim();
-		inline int cdim();
-		inline T elem(int r, int c);
-
-		//Matrix transpose();
-		//Matrix ctranspose();
+		Matrix transpose();
 		//Matrix LUD();
 		//Matrix QRD();
-		//Matrix EigenD();
-		//Matrix CholeskyD();
+		//Matrix eigenD();
+		//Matrix choleskyD();
 
 		void print();
 
