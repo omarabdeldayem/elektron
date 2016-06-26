@@ -2,12 +2,13 @@
 
 namespace nanos
 {
+	template class Matrix<uint_fast8_t>;
 	template class Matrix<int>;
 	template class Matrix<float>;
 	template class Matrix<long>;
 
 	template <typename T>
-	Matrix<T>::Matrix(std::vector<std::vector<T>> T_matrix)
+	Matrix<T>::Matrix(std::vector<std::vector<T>>& T_matrix)
 	{
 		m = T_matrix;
 		r_dim = T_matrix.size();
@@ -33,7 +34,17 @@ namespace nanos
 	}
 
 	template <typename T>
-	Matrix<T> Matrix<T>::transpose()
+	std::vector<T>& Matrix<T>::operator[] (int i)
+	{
+		if (i < 0 || i > m.size())
+		{
+			throw std::out_of_range("Index out of bounds.");
+		}
+		return m[i];
+	}
+
+	template <typename T>
+	Matrix<T> Matrix<T>::tpose()
 	{
 		Matrix<T> m_T = Matrix<T>(NULL, c_dim, r_dim);
 
@@ -41,11 +52,26 @@ namespace nanos
 		{
 			for (int j = 0; j < c_dim; j++)
 			{
-				m_T.set_elem(m[i][j], j, i);
+				m_T[i][j] = m_T[j][i];
 			}
 		}
 
 		return m_T;
+	}
+
+	template <typename T>
+	T Matrix<T>::tr()
+	{
+		if (is_sqr)
+		{
+			T sum = 0;
+			for (int i = 0; i < r_dim; i++)
+			{
+				sum += m[i][i];
+			}
+			return sum;
+		}
+		return NULL;
 	}
 
 	template <typename T>
