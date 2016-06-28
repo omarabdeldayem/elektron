@@ -112,10 +112,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="nblas\Matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Matrix.hpp" />
+    <ClInclude Include="nblas\Matrix.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <vector>
+#include <numeric>
 #include <math.h>
 
 namespace nanos
@@ -12,19 +13,19 @@ namespace nanos
 	class Matrix
 	{
 	public:
+		Matrix();
 		Matrix(std::vector<std::vector<T>>& T_matrix);
 		Matrix(T def_val, int r, int c);
 		
 		std::vector<T>& operator[](int i);
+		Matrix<T> operator*(Matrix<T> a);
 
 		inline int rdim() { return r_dim; };
 		inline int cdim() { return c_dim; };
 
 		T tr();
-		
-		Matrix tpose();
-		
-		//Matrix LUD();
+		Matrix<T> tpose();
+		void LUD(Matrix<T>& l, Matrix<T>& u);
 		//Matrix QRD();
 		//Matrix eigenD();
 		//Matrix choleskyD();
@@ -37,6 +38,8 @@ namespace nanos
 		bool is_sqr = r_dim == c_dim ? true : false;
 
 		std::vector<std::vector<T>> m;		
+
+		//Matrix<T> pivot();
 	};
 
 }

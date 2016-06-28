@@ -8,6 +8,12 @@ namespace nanos
 	template class Matrix<long>;
 
 	template <typename T>
+	Matrix<T>::Matrix()
+	{
+
+	}
+
+	template <typename T>
 	Matrix<T>::Matrix(std::vector<std::vector<T>>& T_matrix)
 	{
 		m = T_matrix;
@@ -44,6 +50,25 @@ namespace nanos
 	}
 
 	template <typename T>
+	Matrix<T> Matrix<T>::operator* (Matrix<T> a)
+	{
+		Matrix<T> res = Matrix<T>(0, r_dim, a.cdim());
+
+		for (int i = 0; i < r_dim; i++)
+		{
+			for (int j = 0; j < a.cdim(); j++)
+			{
+				for (int k = 0; k < c_dim; k++)
+				{
+					res[i][j] += m[i][k] * a[k][j];
+				}
+			}
+		}
+
+		return res;
+	}
+
+	template <typename T>
 	Matrix<T> Matrix<T>::tpose()
 	{
 		Matrix<T> m_T = Matrix<T>(NULL, c_dim, r_dim);
@@ -72,6 +97,43 @@ namespace nanos
 			return sum;
 		}
 		return NULL;
+	}
+
+	template <typename T>
+	void Matrix<T>::LUD(Matrix<T>& l, Matrix<T>& u)
+	{
+		for (int j = 0; j < r_dim; j++)
+		{
+			for (int i = 0; i < r_dim; i++)
+			{
+				if (i <= j)
+				{
+					u[i][j] = m[i][j];
+					for (int k = 0; k < i - 1; k++)
+					{
+						u[i][j] -= l[i][k] * u[k][j];
+					}
+					if (i == j)
+					{
+						l[i][j] = 1;
+					}
+					else
+					{
+						l[i][j] = 0;
+					}
+				}
+				else
+				{
+					l[i][j] = m[i][j];
+					for (int k = 0; k <= j - 1; k++)
+					{
+						l[i][j] -= l[i][k] * u[k][j];
+					}
+					l[i][j] /=	u[j][j];
+					u[i][j] = 0;
+				}
+			}
+		}
 	}
 
 	template <typename T>
