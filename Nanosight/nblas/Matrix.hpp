@@ -13,7 +13,7 @@ namespace nanos
 	class Matrix
 	{
 	public:
-		Matrix();
+		Matrix(int r, int c);
 		Matrix(std::vector<std::vector<T>>& T_matrix);
 		Matrix(T def_val, int r, int c);
 		
@@ -39,7 +39,7 @@ namespace nanos
 
 		std::vector<std::vector<T>> m;		
 
-		//Matrix<T> pivot();
+		Matrix<T> pivot();
 	};
 
 }

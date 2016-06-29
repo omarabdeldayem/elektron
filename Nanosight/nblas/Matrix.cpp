@@ -8,9 +8,25 @@ namespace nanos
 	template class Matrix<long>;
 
 	template <typename T>
-	Matrix<T>::Matrix()
+	Matrix<T>::Matrix(int r, int c)
 	{
+		for (int i = 0; i < r; i++)
+		{
+			std::vector<T> t;
+			m.push_back(t);
 
+			for (int j = 0; j < c; j++)
+			{
+				if (i == j)
+				{
+					m[i].push_back(1);
+				}
+				else
+				{
+					m[i].push_back(0);
+				}
+			}
+		}
 	}
 
 	template <typename T>
@@ -99,41 +115,22 @@ namespace nanos
 		return NULL;
 	}
 
+	//template <typename T>
+	//Matrix<T> Matrix<T>::pivot()
+	//{
+	//	if (is_sqr)
+	//	{
+	//		for (int i = 0; i < r_dim; i++)
+	//		{
+
+	//		}
+	//	}
+	//}
+
 	template <typename T>
 	void Matrix<T>::LUD(Matrix<T>& l, Matrix<T>& u)
 	{
-		for (int j = 0; j < r_dim; j++)
-		{
-			for (int i = 0; i < r_dim; i++)
-			{
-				if (i <= j)
-				{
-					u[i][j] = m[i][j];
-					for (int k = 0; k < i - 1; k++)
-					{
-						u[i][j] -= l[i][k] * u[k][j];
-					}
-					if (i == j)
-					{
-						l[i][j] = 1;
-					}
-					else
-					{
-						l[i][j] = 0;
-					}
-				}
-				else
-				{
-					l[i][j] = m[i][j];
-					for (int k = 0; k <= j - 1; k++)
-					{
-						l[i][j] -= l[i][k] * u[k][j];
-					}
-					l[i][j] /=	u[j][j];
-					u[i][j] = 0;
-				}
-			}
-		}
+	
 	}
 
 	template <typename T>
