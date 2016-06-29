@@ -13,6 +13,7 @@ namespace nanos
 	class Matrix
 	{
 	public:
+		Matrix();
 		Matrix(int r, int c);
 		Matrix(std::vector<std::vector<T>>& T_matrix);
 		Matrix(T def_val, int r, int c);
@@ -22,10 +23,12 @@ namespace nanos
 
 		inline int rdim() { return r_dim; };
 		inline int cdim() { return c_dim; };
+		inline std::vector<std::vector<T>> data() { return m; };
 
 		T tr();
 		Matrix<T> tpose();
-		void LUD(Matrix<T>& l, Matrix<T>& u);
+		void luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
+		
 		//Matrix QRD();
 		//Matrix eigenD();
 		//Matrix choleskyD();
@@ -43,4 +46,5 @@ namespace nanos
 	};
 
 }
+
 #endif 

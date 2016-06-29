@@ -7,8 +7,16 @@ namespace nanos
 	template class Matrix<float>;
 	template class Matrix<double>;
 	template class Matrix<long>;
-	template <typename T>
 
+	template <typename T>
+	Matrix<T>::Matrix()
+	{
+		r_dim = 0;
+		c_dim = 0;
+	}
+
+	// Creates r x c identity matrix
+	template <typename T>
 	Matrix<T>::Matrix(int r, int c)
 	{
 		for (int i = 0; i < r; i++)
@@ -152,31 +160,31 @@ namespace nanos
 	}
 
 	template <typename T>
-	void Matrix<T>::LUD(Matrix<T>& l, Matrix<T>& u)
+	void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>&p)
 	{
-		Matrix<T> p = pivot();
+		p = p.pivot();
 		Matrix<T> m2 = p * m;
 
 		for (int j = 0; j < r_dim; j++)
 		{
-			l[j][j] = 1;
+			l[j][j] = 1.0;
 			for (int i = 0; i < j + 1; i++)
 			{
-				double s1 = 0;
+				double s = 0.0;
 				for (int k = 0; k < i; k++)
 				{
-					s1 += u[k][j] * l[i][k];
+					s += u[k][j] * l[i][k];
 				}
-				u[i][j] = m2[i][j] - s1;
+				u[i][j] = m2[i][j] - s;
 			}
 			for (int i = j; i < r_dim; i++)
 			{
-				double s2 = 0;
+				double s = 0.0;
 				for (int k = 0; k < j; k++)
 				{
-					s2 += u[k][j] * l[i][k];
+					s += u[k][j] * l[i][k];
 				}
-				l[i][j] = (m2[i][j] - s2) / u[j][j];
+				l[i][j] = (m2[i][j] - s) / u[j][j];
 			}
 		}
 	}
