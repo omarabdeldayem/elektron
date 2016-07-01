@@ -25,9 +25,15 @@
     <ClCompile Include="blas\Matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cv\VCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blas\Matrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cv\VCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

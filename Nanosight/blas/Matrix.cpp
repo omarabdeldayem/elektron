@@ -57,9 +57,9 @@ namespace nanos
 			std::vector<T> t;
 			m.push_back(t);
 
-			for (int j = 0; j < c; j++)
+			for (auto& mat: m)
 			{
-				m[i].push_back(def_val);
+				mat.push_back(def_val);
 			}
 		}
 

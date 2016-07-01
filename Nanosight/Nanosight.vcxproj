@@ -110,11 +110,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cv\VCapture.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="blas\Matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blas\Matrix.hpp" />
+    <ClInclude Include="cv\VCapture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
