@@ -97,6 +97,14 @@ namespace nanos
 	}
 
 	template <typename T>
+	void Matrix<T>::operator= (std::vector<std::vector<T>>& mat)
+	{
+		m = mat;
+		r_dim = m.size();
+		c_dim = m[0].size();
+	}
+
+	template <typename T>
 	Matrix<T> Matrix<T>::tpose()
 	{
 		Matrix<T> m_T = Matrix<T>(NULL, c_dim, r_dim);
@@ -160,7 +168,7 @@ namespace nanos
 	}
 
 	template <typename T>
-	void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>&p)
+	void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 	{
 		p = p.pivot();
 		Matrix<T> m2 = p * m;
@@ -189,6 +197,7 @@ namespace nanos
 		}
 	}
 
+	// ------ DEBUG ------ //
 	template <typename T>
 	void Matrix<T>::print()
 	{
@@ -202,6 +211,6 @@ namespace nanos
 		}
 		std::cout.flush();
 
-		std::system("pause");	// DEBUG
+		std::system("pause");	
 	}
 }

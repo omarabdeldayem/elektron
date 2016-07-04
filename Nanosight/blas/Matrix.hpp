@@ -13,18 +13,23 @@ namespace nanos
 	class Matrix
 	{
 	public:
+		// CONSTRUCTORS
 		Matrix();
 		Matrix(int r, int c);
 		Matrix(std::vector<std::vector<T>>& T_matrix);
 		Matrix(T def_val, int r, int c);
 		
+		// OPERATOR OVERLOADS
 		std::vector<T>& operator[](int i);
 		Matrix<T> operator*(Matrix<T> a);
+		void operator=(std::vector<std::vector<T>>& mat);
 
+		// PRIVATE MEMBER ACCESS METHODS
 		inline int rdim() { return r_dim; };
 		inline int cdim() { return c_dim; };
 		inline std::vector<std::vector<T>> data() { return m; };
 
+		// MATRIX OPERATIONS
 		T tr();
 		Matrix<T> tpose();
 		void luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
