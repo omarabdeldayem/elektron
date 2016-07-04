@@ -8,16 +8,9 @@ namespace nanos
 	template class Matrix<double>;
 	template class Matrix<long>;
 
-	template <typename T>
-	Matrix<T>::Matrix()
-	{
-		r_dim = 0;
-		c_dim = 0;
-	}
-
 	// Creates r x c identity matrix
 	template <typename T>
-	Matrix<T>::Matrix(int r, int c)
+	Matrix<T>::Matrix(int r, int c) : r_dim(r), c_dim(c)
 	{
 		for (int i = 0; i < r; i++)
 		{
@@ -36,21 +29,10 @@ namespace nanos
 				}
 			}
 		}
-
-		r_dim = r;
-		c_dim = c;
 	}
 
 	template <typename T>
-	Matrix<T>::Matrix(std::vector<std::vector<T>>& T_matrix)
-	{
-		m = T_matrix;
-		r_dim = T_matrix.size();
-		c_dim = T_matrix[0].size();
-	}
-
-	template <typename T>
-	Matrix<T>::Matrix(T def_val, int r, int c)
+	Matrix<T>::Matrix(T def_val, int r, int c) : r_dim(r), c_dim(c)
 	{
 		for (int i = 0; i < r; i++)
 		{
@@ -62,9 +44,6 @@ namespace nanos
 				mat.push_back(def_val);
 			}
 		}
-
-		r_dim = r;
-		c_dim = c;
 	}
 
 	template <typename T>

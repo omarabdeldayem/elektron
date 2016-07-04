@@ -14,9 +14,16 @@ namespace nanos
 	{
 	public:
 		// CONSTRUCTORS
-		Matrix();
+		Matrix()
+			: r_dim(0)
+			, c_dim(0)
+		{ }
+		Matrix(std::vector<std::vector<T>>& T_matrix)
+			: m(T_matrix)
+			, r_dim(T_matrix.size())
+			, c_dim(T_matrix[0].size())
+		{ }
 		Matrix(int r, int c);
-		Matrix(std::vector<std::vector<T>>& T_matrix);
 		Matrix(T def_val, int r, int c);
 		
 		// OPERATOR OVERLOADS
