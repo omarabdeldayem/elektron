@@ -1,0 +1,20 @@
+apply plugin: 'cpp'
+
+sources {
+    cpp {
+        source {
+            srcDir "neurolib"
+            include "**/*.cpp"
+        }
+    }
+}
+libraries {
+    neurolib {}
+}
+executables {
+    main {
+        binaries.all {
+            lib libraries.neurolib.shared
+        }
+    }   
+}
