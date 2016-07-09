@@ -1,0 +1,1 @@
+/usr/bin/g++-6      CMakeFiles/neurolib.dir/Main.cpp.o  -o neurolib -rdynamic blas/libblas.a 
