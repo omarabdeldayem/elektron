@@ -18,6 +18,7 @@ It will do things hopefully. Written in C++11 (be wary of using C++14/C++17 feat
 git config --global user.name "$YOUR_GITHUB_USERNAME"
 git config --global user.email "$YOUR_GITHUB_EMAIL"
 ```
+4. SSH into your box using `vagrant ss` from terminal or using an SSH client, with the box username and password both being vagrant.
 
 ## Building the Project
 I'm using CMake to build the project. It has cross-platform support so we can build for multiple platforms later on. `src` contains the head `CMakeLists.txt` file, and every subdirectory within it also contains a `CMakeLists.txt`. This CMake tutorial is a decent starting point: https://cmake.org/cmake-tutorial/. I need to update the CMake files to make them flexible to adding new files, otherwise they won't get build/linker errors. 
