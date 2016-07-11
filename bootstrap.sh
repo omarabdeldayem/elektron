@@ -17,8 +17,3 @@ apt-get install -y cmake
 
 # Upgrade all
 apt-get -y upgrade
-
-# Configure git
-git config --global user.name "Omar Abdeldayem"
-git config --global user.email "omar.abdeldayem@outlook.com"
-

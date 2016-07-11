@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/vagrant/src/blas/Matrix.hpp
+stdexcept
+-
+iostream
+-
+vector
+-
+numeric
+-
+math.h
+-
+
+/vagrant/src/cv/IntegralImage.cpp
+IntegralImage.hpp
+/vagrant/src/cv/IntegralImage.hpp
+
+/vagrant/src/cv/IntegralImage.hpp
+../blas/Matrix.hpp
+/vagrant/src/blas/Matrix.hpp
+
+/vagrant/src/cv/VCapture.cpp
+
