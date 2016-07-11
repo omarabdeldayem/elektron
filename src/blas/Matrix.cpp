@@ -1,6 +1,6 @@
 #include "Matrix.hpp"
 
-namespace nanos
+namespace nlib
 {
 	template class Matrix<uint_fast8_t>;
 	template class Matrix<int>;

@@ -56,10 +56,11 @@ CMAKE_BINARY_DIR = /vagrant/build
 # Target rules for target CMakeFiles/neurolib.dir
 
 # All Build rule for target.
+CMakeFiles/neurolib.dir/all: cv/CMakeFiles/cv.dir/all
 CMakeFiles/neurolib.dir/all: blas/CMakeFiles/blas.dir/all
 	$(MAKE) -f CMakeFiles/neurolib.dir/build.make CMakeFiles/neurolib.dir/depend
 	$(MAKE) -f CMakeFiles/neurolib.dir/build.make CMakeFiles/neurolib.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /vagrant/build/CMakeFiles  2
+	$(CMAKE_COMMAND) -E cmake_progress_report /vagrant/build/CMakeFiles  4
 	@echo "Built target neurolib"
 .PHONY : CMakeFiles/neurolib.dir/all
 
@@ -69,7 +70,7 @@ all: CMakeFiles/neurolib.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/neurolib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /vagrant/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /vagrant/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/neurolib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /vagrant/build/CMakeFiles 0
 .PHONY : CMakeFiles/neurolib.dir/rule
@@ -135,6 +136,56 @@ blas/CMakeFiles/blas.dir/clean:
 
 # clean rule for target.
 clean: blas/CMakeFiles/blas.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory cv
+
+# Convenience name for "all" pass in the directory.
+cv/all: cv/CMakeFiles/cv.dir/all
+.PHONY : cv/all
+
+# Convenience name for "clean" pass in the directory.
+cv/clean: cv/CMakeFiles/cv.dir/clean
+.PHONY : cv/clean
+
+# Convenience name for "preinstall" pass in the directory.
+cv/preinstall:
+.PHONY : cv/preinstall
+
+#=============================================================================
+# Target rules for target cv/CMakeFiles/cv.dir
+
+# All Build rule for target.
+cv/CMakeFiles/cv.dir/all:
+	$(MAKE) -f cv/CMakeFiles/cv.dir/build.make cv/CMakeFiles/cv.dir/depend
+	$(MAKE) -f cv/CMakeFiles/cv.dir/build.make cv/CMakeFiles/cv.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /vagrant/build/CMakeFiles  2 3
+	@echo "Built target cv"
+.PHONY : cv/CMakeFiles/cv.dir/all
+
+# Include target in all.
+all: cv/CMakeFiles/cv.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+cv/CMakeFiles/cv.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /vagrant/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 cv/CMakeFiles/cv.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /vagrant/build/CMakeFiles 0
+.PHONY : cv/CMakeFiles/cv.dir/rule
+
+# Convenience name for target.
+cv: cv/CMakeFiles/cv.dir/rule
+.PHONY : cv
+
+# clean rule for target.
+cv/CMakeFiles/cv.dir/clean:
+	$(MAKE) -f cv/CMakeFiles/cv.dir/build.make cv/CMakeFiles/cv.dir/clean
+.PHONY : cv/CMakeFiles/cv.dir/clean
+
+# clean rule for target.
+clean: cv/CMakeFiles/cv.dir/clean
 .PHONY : clean
 
 #=============================================================================

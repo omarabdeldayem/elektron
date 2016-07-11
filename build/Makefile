@@ -127,6 +127,19 @@ blas/fast:
 	$(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/build
 .PHONY : blas/fast
 
+#=============================================================================
+# Target rules for targets named cv
+
+# Build rule for target.
+cv: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cv
+.PHONY : cv
+
+# fast build rule for target.
+cv/fast:
+	$(MAKE) -f cv/CMakeFiles/cv.dir/build.make cv/CMakeFiles/cv.dir/build
+.PHONY : cv/fast
+
 Main.o: Main.cpp.o
 .PHONY : Main.o
 
@@ -161,6 +174,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... neurolib"
 	@echo "... blas"
+	@echo "... cv"
 	@echo "... Main.o"
 	@echo "... Main.i"
 	@echo "... Main.s"

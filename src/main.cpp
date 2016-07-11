@@ -3,12 +3,12 @@
 int main()
 {
 	// TEST 
-	nanos::Matrix<double> m = nanos::Matrix<double>(8.0, 3, 3);
-	nanos::Matrix<double> m_l = nanos::Matrix<double>(0.0, 3, 3),
-						m_u = nanos::Matrix<double>(0.0, 3, 3),
-						m_p = nanos::Matrix<double>(0.0, 3, 3);
+	nlib::Matrix<double> m = nlib::Matrix<double>(8.0, 3, 3);
+	nlib::Matrix<double> m_l = nlib::Matrix<double>(0.0, 3, 3),
+						m_u = nlib::Matrix<double>(0.0, 3, 3),
+						m_p = nlib::Matrix<double>(0.0, 3, 3);
 
-	nanos::Matrix<double> m2;
+	nlib::Matrix<double> m2;
 
 	m[0][0] = 1;
 	m[0][1] = 2;
@@ -26,7 +26,7 @@ int main()
 	m_u.print();
 	m_p.print();
 
-	nanos::Matrix<double> m_T = m.tpose();
+	nlib::Matrix<double> m_T = m.tpose();
 	m_T.print();
 
 	return 0;

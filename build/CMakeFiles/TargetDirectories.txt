@@ -1,2 +1,3 @@
+/vagrant/build/cv/CMakeFiles/cv.dir
 /vagrant/build/blas/CMakeFiles/blas.dir
 /vagrant/build/CMakeFiles/neurolib.dir

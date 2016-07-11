@@ -11,10 +11,12 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
   "/vagrant/build/blas/CMakeFiles/blas.dir/DependInfo.cmake"
+  "/vagrant/build/cv/CMakeFiles/cv.dir/DependInfo.cmake"
   )
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
+  "/vagrant/src/cv"
   )
 set(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
 set(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

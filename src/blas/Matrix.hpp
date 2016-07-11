@@ -7,7 +7,7 @@
 #include <numeric>
 #include <math.h>
 
-namespace nanos
+namespace nlib
 {
 	template<typename T>
 	class Matrix

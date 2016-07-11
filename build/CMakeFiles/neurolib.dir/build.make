@@ -82,6 +82,7 @@ neurolib_EXTERNAL_OBJECTS =
 neurolib: CMakeFiles/neurolib.dir/Main.cpp.o
 neurolib: CMakeFiles/neurolib.dir/build.make
 neurolib: blas/libblas.a
+neurolib: cv/libcv.a
 neurolib: CMakeFiles/neurolib.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable neurolib"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/neurolib.dir/link.txt --verbose=$(VERBOSE)

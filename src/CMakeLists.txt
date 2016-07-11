@@ -8,7 +8,8 @@ set (NEUROLIB_VERSION_MAJOR 0)
 set (NEUROLIB_VERSION_MINOR 1)
 
 add_subdirectory(blas)
-#add_subdirectory(cv)
+add_subdirectory(cv)
 
 add_executable(neurolib Main.cpp)
 target_link_libraries (neurolib blas)
+target_link_libraries (neurolib cv)
