@@ -56,8 +56,8 @@ CMAKE_BINARY_DIR = /vagrant/build
 # Target rules for target CMakeFiles/neurolib.dir
 
 # All Build rule for target.
-CMakeFiles/neurolib.dir/all: cv/CMakeFiles/cv.dir/all
 CMakeFiles/neurolib.dir/all: blas/CMakeFiles/blas.dir/all
+CMakeFiles/neurolib.dir/all: cv/CMakeFiles/cv.dir/all
 	$(MAKE) -f CMakeFiles/neurolib.dir/build.make CMakeFiles/neurolib.dir/depend
 	$(MAKE) -f CMakeFiles/neurolib.dir/build.make CMakeFiles/neurolib.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /vagrant/build/CMakeFiles  4

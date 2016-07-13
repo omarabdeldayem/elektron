@@ -6,19 +6,5 @@
 
 #IncludeRegexTransform: 
 
-/vagrant/src/blas/Matrix.cpp
-Matrix.hpp
-/vagrant/src/blas/Matrix.hpp
-
-/vagrant/src/blas/Matrix.hpp
-stdexcept
--
-iostream
--
-vector
--
-numeric
--
-math.h
--
+/vagrant/src/blas/Solver.cpp
 

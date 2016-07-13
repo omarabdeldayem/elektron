@@ -3,12 +3,6 @@
 namespace nlib
 {
 
-template class Matrix<uint_fast8_t>;
-template class Matrix<int>;
-template class Matrix<float>;
-template class Matrix<double>;
-template class Matrix<long>;
-
 // Creates r x c identity matrix
 template <typename T>
 Matrix<T>::Matrix(int r, int c) : r_dim(r), c_dim(c)
@@ -193,4 +187,5 @@ void Matrix<T>::print()
 
 	std::system("pause");	
 }
+
 }

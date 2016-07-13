@@ -1,4 +1,4 @@
 file(GLOB BLAS_SOURCES *.cpp)
-add_library (blas ${BLAS_SOURCES})
-
-target_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+list(REMOVE_ITEM BLAS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Matrix.cpp)
+add_library(blas ${BLAS_SOURCES})
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})

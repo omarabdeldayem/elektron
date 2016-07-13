@@ -15,6 +15,7 @@ set(CMAKE_TARGET_LINKED_INFO_FILES
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
+  "/vagrant/src/cv/cv"
   "/vagrant/src/cv"
   )
 set(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

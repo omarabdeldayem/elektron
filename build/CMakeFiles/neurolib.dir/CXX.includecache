@@ -10,6 +10,10 @@
 blas/Matrix.hpp
 /vagrant/src/blas/Matrix.hpp
 
+/vagrant/src/blas/Matrix.cpp
+Matrix.hpp
+/vagrant/src/blas/Matrix.hpp
+
 /vagrant/src/blas/Matrix.hpp
 stdexcept
 -
@@ -21,4 +25,6 @@ numeric
 -
 math.h
 -
+Matrix.cpp
+/vagrant/src/blas/Matrix.cpp
 

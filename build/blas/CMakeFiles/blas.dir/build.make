@@ -49,37 +49,37 @@ include blas/CMakeFiles/blas.dir/progress.make
 # Include the compile flags for this target's objects.
 include blas/CMakeFiles/blas.dir/flags.make
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.o: blas/CMakeFiles/blas.dir/flags.make
-blas/CMakeFiles/blas.dir/Matrix.cpp.o: /vagrant/src/blas/Matrix.cpp
+blas/CMakeFiles/blas.dir/Solver.cpp.o: blas/CMakeFiles/blas.dir/flags.make
+blas/CMakeFiles/blas.dir/Solver.cpp.o: /vagrant/src/blas/Solver.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /vagrant/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object blas/CMakeFiles/blas.dir/Matrix.cpp.o"
-	cd /vagrant/build/blas && /usr/bin/g++-6   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/blas.dir/Matrix.cpp.o -c /vagrant/src/blas/Matrix.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object blas/CMakeFiles/blas.dir/Solver.cpp.o"
+	cd /vagrant/build/blas && /usr/bin/g++-6   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/blas.dir/Solver.cpp.o -c /vagrant/src/blas/Solver.cpp
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/blas.dir/Matrix.cpp.i"
-	cd /vagrant/build/blas && /usr/bin/g++-6  $(CXX_DEFINES) $(CXX_FLAGS) -E /vagrant/src/blas/Matrix.cpp > CMakeFiles/blas.dir/Matrix.cpp.i
+blas/CMakeFiles/blas.dir/Solver.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/blas.dir/Solver.cpp.i"
+	cd /vagrant/build/blas && /usr/bin/g++-6  $(CXX_DEFINES) $(CXX_FLAGS) -E /vagrant/src/blas/Solver.cpp > CMakeFiles/blas.dir/Solver.cpp.i
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/blas.dir/Matrix.cpp.s"
-	cd /vagrant/build/blas && /usr/bin/g++-6  $(CXX_DEFINES) $(CXX_FLAGS) -S /vagrant/src/blas/Matrix.cpp -o CMakeFiles/blas.dir/Matrix.cpp.s
+blas/CMakeFiles/blas.dir/Solver.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/blas.dir/Solver.cpp.s"
+	cd /vagrant/build/blas && /usr/bin/g++-6  $(CXX_DEFINES) $(CXX_FLAGS) -S /vagrant/src/blas/Solver.cpp -o CMakeFiles/blas.dir/Solver.cpp.s
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.o.requires:
-.PHONY : blas/CMakeFiles/blas.dir/Matrix.cpp.o.requires
+blas/CMakeFiles/blas.dir/Solver.cpp.o.requires:
+.PHONY : blas/CMakeFiles/blas.dir/Solver.cpp.o.requires
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.o.provides: blas/CMakeFiles/blas.dir/Matrix.cpp.o.requires
-	$(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Matrix.cpp.o.provides.build
-.PHONY : blas/CMakeFiles/blas.dir/Matrix.cpp.o.provides
+blas/CMakeFiles/blas.dir/Solver.cpp.o.provides: blas/CMakeFiles/blas.dir/Solver.cpp.o.requires
+	$(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Solver.cpp.o.provides.build
+.PHONY : blas/CMakeFiles/blas.dir/Solver.cpp.o.provides
 
-blas/CMakeFiles/blas.dir/Matrix.cpp.o.provides.build: blas/CMakeFiles/blas.dir/Matrix.cpp.o
+blas/CMakeFiles/blas.dir/Solver.cpp.o.provides.build: blas/CMakeFiles/blas.dir/Solver.cpp.o
 
 # Object files for target blas
 blas_OBJECTS = \
-"CMakeFiles/blas.dir/Matrix.cpp.o"
+"CMakeFiles/blas.dir/Solver.cpp.o"
 
 # External object files for target blas
 blas_EXTERNAL_OBJECTS =
 
-blas/libblas.a: blas/CMakeFiles/blas.dir/Matrix.cpp.o
+blas/libblas.a: blas/CMakeFiles/blas.dir/Solver.cpp.o
 blas/libblas.a: blas/CMakeFiles/blas.dir/build.make
 blas/libblas.a: blas/CMakeFiles/blas.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX static library libblas.a"
@@ -90,7 +90,7 @@ blas/libblas.a: blas/CMakeFiles/blas.dir/link.txt
 blas/CMakeFiles/blas.dir/build: blas/libblas.a
 .PHONY : blas/CMakeFiles/blas.dir/build
 
-blas/CMakeFiles/blas.dir/requires: blas/CMakeFiles/blas.dir/Matrix.cpp.o.requires
+blas/CMakeFiles/blas.dir/requires: blas/CMakeFiles/blas.dir/Solver.cpp.o.requires
 .PHONY : blas/CMakeFiles/blas.dir/requires
 
 blas/CMakeFiles/blas.dir/clean:

@@ -115,29 +115,29 @@ blas/fast:
 	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/build
 .PHONY : blas/fast
 
-Matrix.o: Matrix.cpp.o
-.PHONY : Matrix.o
+Solver.o: Solver.cpp.o
+.PHONY : Solver.o
 
 # target to build an object file
-Matrix.cpp.o:
-	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Matrix.cpp.o
-.PHONY : Matrix.cpp.o
+Solver.cpp.o:
+	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Solver.cpp.o
+.PHONY : Solver.cpp.o
 
-Matrix.i: Matrix.cpp.i
-.PHONY : Matrix.i
+Solver.i: Solver.cpp.i
+.PHONY : Solver.i
 
 # target to preprocess a source file
-Matrix.cpp.i:
-	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Matrix.cpp.i
-.PHONY : Matrix.cpp.i
+Solver.cpp.i:
+	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Solver.cpp.i
+.PHONY : Solver.cpp.i
 
-Matrix.s: Matrix.cpp.s
-.PHONY : Matrix.s
+Solver.s: Solver.cpp.s
+.PHONY : Solver.s
 
 # target to generate assembly for a file
-Matrix.cpp.s:
-	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Matrix.cpp.s
-.PHONY : Matrix.cpp.s
+Solver.cpp.s:
+	cd /vagrant/build && $(MAKE) -f blas/CMakeFiles/blas.dir/build.make blas/CMakeFiles/blas.dir/Solver.cpp.s
+.PHONY : Solver.cpp.s
 
 # Help Target
 help:
@@ -148,9 +148,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... blas"
-	@echo "... Matrix.o"
-	@echo "... Matrix.i"
-	@echo "... Matrix.s"
+	@echo "... Solver.o"
+	@echo "... Solver.i"
+	@echo "... Solver.s"
 .PHONY : help
 
 

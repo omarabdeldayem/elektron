@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/blas.dir/Matrix.cpp.o"
+  "CMakeFiles/blas.dir/Solver.cpp.o"
   "libblas.pdb"
   "libblas.a"
 )
