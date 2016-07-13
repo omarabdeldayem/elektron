@@ -1,3 +1,4 @@
-add_library (blas Matrix.cpp)
+file(GLOB BLAS_SOURCES *.cpp)
+add_library (blas ${BLAS_SOURCES})
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
