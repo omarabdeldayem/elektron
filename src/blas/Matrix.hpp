@@ -15,27 +15,27 @@ class Matrix
 {
 public:
 	// CONSTRUCTORS
-	Matrix()
-		: r_dim(0)
-		, c_dim(0)
-	{ }
+	Matrix(int r, int c);
+
 	Matrix(std::vector<std::vector<T>>& T_matrix)
 		: m(T_matrix)
-		, r_dim(T_matrix.size())
-		, c_dim(T_matrix[0].size())
+		, rows_(T_matrix.size())
+		, cols_(T_matrix[0].size())
 	{ }
-	Matrix(int r, int c);
-	Matrix(T def_val, int r, int c);
+	
+	Matrix(T def_val, int r, int c)
+		: rows_(r)
+		, cols_(c)
+	{ mat_.resize(rows_ * cols_, def_val); }
 	
 	// OPERATOR OVERLOADS
-	std::vector<T>& operator[](int i);
+	std::vector<T> operator[](int i);
 	Matrix<T> operator*(Matrix<T> a);
-	void operator=(std::vector<std::vector<T>>& mat);
+	void operator=(std::vector<std::vector<T>>& mat_);
 
 	// PRIVATE MEMBER ACCESS METHODS
-	inline int rdim() { return r_dim; };
-	inline int cdim() { return c_dim; };
-	inline std::vector<std::vector<T>> data() { return m; };
+	inline int rdim() { return rows_; };
+	inline int cdim() { return cols_; };
 
 	// MATRIX OPERATIONS
 	T tr();
@@ -49,9 +49,12 @@ public:
 	void print();
 
 private:
-	int r_dim;
-	int c_dim;
-	bool is_sqr = r_dim == c_dim ? true : false;
+	int rows_;
+	int cols_;
+
+	// Default store mat_rix in row-major form
+	std::vector<T> mat_;
+	typename std::vector<T>::iterator iter_;
 
 	std::vector<std::vector<T>> m;		
 

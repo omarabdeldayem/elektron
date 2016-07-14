@@ -3,66 +3,42 @@
 namespace nlib
 {
 
-// Creates r x c identity matrix
+// Creates r x c identity mat_rix
 template <typename T>
-Matrix<T>::Matrix(int r, int c) : r_dim(r), c_dim(c)
+Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
 {
-	for (int i = 0; i < r; i++)
+	mat_.resize(r * c, 0);
+	for (iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
 	{
-		std::vector<T> t;
-		m.push_back(t);
-
-		for (int j = 0; j < c; j++)
-		{
-			if (i == j)
-			{
-				m[i].push_back(1);
-			}
-			else
-			{
-				m[i].push_back(0);
-			}
-		}
+		*iter_ = 1;
 	}
 }
 
 template <typename T>
-Matrix<T>::Matrix(T def_val, int r, int c) : r_dim(r), c_dim(c)
+std::vector<T> Matrix<T>::operator[] (int i)
 {
-	for (int i = 0; i < r; i++)
-	{
-		std::vector<T> t;
-		m.push_back(t);
-
-		for (int j = 0; j < c; j++)
-		{
-			m[i].push_back(def_val);
-		}
-	}
-}
-
-template <typename T>
-std::vector<T>& Matrix<T>::operator[] (int i)
-{
-	if (i < 0 || i > m.size())
+	if (i < 0 || i > mat_.size())
 	{
 		throw std::out_of_range("Index out of bounds.");
 	}
-	return m[i];
+	typename std::vector<T>::const_iterator begin = mat_.begin() + (i * cols_);
+	typename std::vector<T>::const_iterator end = begin + cols_;
+	std::vector<T> new_vec(begin, end);	
+	return new_vec;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 {
-	Matrix<T> res = Matrix<T>(0, r_dim, a.cdim());
+	Matrix<T> res = Matrix<T>(0, rows_, a.cdim());
 
-	for (int i = 0; i < r_dim; i++)
+	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < a.cdim(); j++)
 		{
-			for (int k = 0; k < c_dim; k++)
+			for (int k = 0; k < cols_; k++)
 			{
-				res[i][j] += m[i][k] * a[k][j];
+				res[i][j] += mat_[i * rows_ + cols_] * a[k][j];
 			}
 		}
 	}
@@ -71,38 +47,38 @@ Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 }
 
 template <typename T>
-void Matrix<T>::operator= (std::vector<std::vector<T>>& mat)
+void Matrix<T>::operator= (std::vector<std::vector<T>>& mat_)
 {
-	m = mat;
-	r_dim = m.size();
-	c_dim = m[0].size();
+	mat_ = m;
+	rows_ = m.size();
+	cols_ = m[0].size();
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::tpose()
 {
-	Matrix<T> m_T = Matrix<T>(NULL, c_dim, r_dim);
+	Matrix<T> mat_T = Matrix<T>(NULL, cols_, rows_);
 
-	for (int i = 0; i < r_dim; i++)
+	for (int i = 0; i < rows_; i++)
 	{
-		for (int j = 0; j < c_dim; j++)
+		for (int j = 0; j < cols_; j++)
 		{
-			m_T[i][j] = m[j][i];
+			mat_T[i][j] = m[j][i];
 		}
 	}
 
-	return m_T;
+	return mat_T;
 }
 
 template <typename T>
 T Matrix<T>::tr()
 {
-	if (is_sqr)
+	if (rows_ == cols_)
 	{
 		T sum = 0;
-		for (int i = 0; i < r_dim; i++)
+		for (iter_ = mat_.begin(); iter_ < iter_.end(); iter_+=cols_+1)
 		{
-			sum += m[i][i];
+			sum += *iter_;
 		}
 		return sum;
 	}
@@ -112,15 +88,15 @@ T Matrix<T>::tr()
 template <typename T>
 Matrix<T> Matrix<T>::pivot()
 {
-	if (is_sqr)
+	if (rows_ == cols_)
 	{
-		Matrix<T> id = Matrix<T>(r_dim, c_dim);
-		for (int i = 0; i < r_dim; i++)
+		Matrix<T> id = Matrix<T>(rows_, cols_);
+		for (int i = 0; i < rows_; i++)
 		{
 			T maxv = m[i][i];
 			int row = i;
 
-			for (int j = i; j < r_dim; j++)
+			for (int j = i; j < rows_; j++)
 			{
 				if (m[j][i] > maxv)
 				{
@@ -147,7 +123,7 @@ void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 	p = p.pivot();
 	Matrix<T> m2 = p * m;
 
-	for (int j = 0; j < r_dim; j++)
+	for (int j = 0; j < rows_; j++)
 	{
 		l[j][j] = 1.0;
 		for (int i = 0; i < j + 1; i++)
@@ -159,7 +135,7 @@ void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 			}
 			u[i][j] = m2[i][j] - s;
 		}
-		for (int i = j; i < r_dim; i++)
+		for (int i = j; i < rows_; i++)
 		{
 			double s = 0.0;
 			for (int k = 0; k < j; k++)
@@ -175,17 +151,18 @@ void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 template <typename T>
 void Matrix<T>::print()
 {
-	for (std::vector<T> i : m)
+	int i = 0;
+
+	for (T val : mat_)
 	{
-		for (T j : i)
-		{
-			std::cout << j << " ";
+		i += 1;	
+		std::cout << val << " ";
+		
+		if (i % rows_ == 0) {
+			std::cout << "\n";
 		}
-		std::cout << "\n";
 	}
 	std::cout.flush();
-
-	std::system("pause");	
 }
 
 }

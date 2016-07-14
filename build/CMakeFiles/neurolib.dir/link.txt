@@ -1,1 +1,0 @@
-/usr/bin/g++-6    -std=c++11 -Wall   CMakeFiles/neurolib.dir/Main.cpp.o  -o neurolib -rdynamic blas/libblas.a cv/libcv.a 

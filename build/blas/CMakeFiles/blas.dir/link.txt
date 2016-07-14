@@ -1,2 +1,0 @@
-/usr/bin/ar cq libblas.a  CMakeFiles/blas.dir/Solver.cpp.o
-/usr/bin/ranlib libblas.a

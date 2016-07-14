@@ -1,2 +1,0 @@
-/usr/bin/ar cq libcv.a  CMakeFiles/cv.dir/IntegralImage.cpp.o CMakeFiles/cv.dir/VCapture.cpp.o
-/usr/bin/ranlib libcv.a
