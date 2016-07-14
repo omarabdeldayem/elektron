@@ -29,10 +29,10 @@ public:
 	{ mat_.resize(rows_ * cols_, def_val); }
 	
 	// OPERATOR OVERLOADS
-	std::vector<T> operator[](int i);
 	Matrix<T> operator*(Matrix<T> a);
 	void operator=(std::vector<std::vector<T>>& mat_);
-
+	T& operator()(int r, int c) { return mat_.at(r * rows_ + c); };
+	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
 	inline int cdim() { return cols_; };

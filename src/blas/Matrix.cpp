@@ -15,19 +15,6 @@ Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
 }
 
 template <typename T>
-std::vector<T> Matrix<T>::operator[] (int i)
-{
-	if (i < 0 || i > mat_.size())
-	{
-		throw std::out_of_range("Index out of bounds.");
-	}
-	typename std::vector<T>::const_iterator begin = mat_.begin() + (i * cols_);
-	typename std::vector<T>::const_iterator end = begin + cols_;
-	std::vector<T> new_vec(begin, end);	
-	return new_vec;
-}
-
-template <typename T>
 Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 {
 	Matrix<T> res = Matrix<T>(0, rows_, a.cdim());
@@ -38,7 +25,7 @@ Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
-				res[i][j] += mat_[i * rows_ + cols_] * a[k][j];
+				res(i, j) += mat_[i * rows_ + cols_] * a(i, j);
 			}
 		}
 	}
@@ -47,7 +34,7 @@ Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 }
 
 template <typename T>
-void Matrix<T>::operator= (std::vector<std::vector<T>>& mat_)
+void Matrix<T>::operator= (std::vector<std::vector<T>>& m)
 {
 	mat_ = m;
 	rows_ = m.size();
@@ -63,7 +50,7 @@ Matrix<T> Matrix<T>::tpose()
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			mat_T[i][j] = m[j][i];
+			mat_T(i, j) = m(j, i);
 		}
 	}
 
@@ -93,14 +80,14 @@ Matrix<T> Matrix<T>::pivot()
 		Matrix<T> id = Matrix<T>(rows_, cols_);
 		for (int i = 0; i < rows_; i++)
 		{
-			T maxv = m[i][i];
+			T maxv = m(i, i);
 			int row = i;
 
 			for (int j = i; j < rows_; j++)
 			{
 				if (m[j][i] > maxv)
 				{
-					maxv = m[j][i];
+					maxv = m(j, i);
 					row = j;
 				}
 			}
@@ -125,24 +112,24 @@ void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 
 	for (int j = 0; j < rows_; j++)
 	{
-		l[j][j] = 1.0;
+		l(j, j) = 1.0;
 		for (int i = 0; i < j + 1; i++)
 		{
 			double s = 0.0;
 			for (int k = 0; k < i; k++)
 			{
-				s += u[k][j] * l[i][k];
+				s += u(k, j) * l(i, k);
 			}
-			u[i][j] = m2[i][j] - s;
+			u(i, j) = m2(i, j) - s;
 		}
 		for (int i = j; i < rows_; i++)
 		{
 			double s = 0.0;
 			for (int k = 0; k < j; k++)
 			{
-				s += u[k][j] * l[i][k];
+				s += u(k, j) * l(i, k);
 			}
-			l[i][j] = (m2[i][j] - s) / u[j][j];
+			l(i, j) = (m2(i, j) - s) / u(j, j);
 		}
 	}
 }
