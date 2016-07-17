@@ -18,7 +18,7 @@ public:
 	Matrix(int r, int c);
 
 	Matrix(std::vector<std::vector<T>>& T_matrix)
-		: m(T_matrix)
+		: mat_(T_matrix)
 		, rows_(T_matrix.size())
 		, cols_(T_matrix[0].size())
 	{ }
@@ -30,7 +30,6 @@ public:
 	
 	// OPERATOR OVERLOADS
 	Matrix<T> operator*(Matrix<T> a);
-	void operator=(std::vector<std::vector<T>>& mat_);
 	T& operator()(int r, int c) { return mat_.at(r * rows_ + c); };
 	
 	// PRIVATE MEMBER ACCESS METHODS
@@ -55,8 +54,6 @@ private:
 	// Default store mat_rix in row-major form
 	std::vector<T> mat_;
 	typename std::vector<T>::iterator iter_;
-
-	std::vector<std::vector<T>> m;		
 
 	Matrix<T> pivot();
 };

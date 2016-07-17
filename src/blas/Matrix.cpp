@@ -34,14 +34,6 @@ Matrix<T> Matrix<T>::operator* (Matrix<T> a)
 }
 
 template <typename T>
-void Matrix<T>::operator= (std::vector<std::vector<T>>& m)
-{
-	mat_ = m;
-	rows_ = m.size();
-	cols_ = m[0].size();
-}
-
-template <typename T>
 Matrix<T> Matrix<T>::tpose()
 {
 	Matrix<T> mat_T = Matrix<T>(NULL, cols_, rows_);
@@ -50,7 +42,7 @@ Matrix<T> Matrix<T>::tpose()
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			mat_T(i, j) = m(j, i);
+			mat_T(i, j) = mat_(j, i);
 		}
 	}
 
@@ -80,23 +72,27 @@ Matrix<T> Matrix<T>::pivot()
 		Matrix<T> id = Matrix<T>(rows_, cols_);
 		for (int i = 0; i < rows_; i++)
 		{
-			T maxv = m(i, i);
+			T maxv = mat_(i, i);
 			int row = i;
 
 			for (int j = i; j < rows_; j++)
 			{
-				if (m[j][i] > maxv)
+				if (mat_(j, i) > maxv)
 				{
-					maxv = m(j, i);
+					maxv = mat_(j, i);
 					row = j;
 				}
 			}
 
 			if (i != row)
 			{
-				std::vector<T> tmp = id[i];
-				id[i] = id[row];
-				id[row] = tmp;
+				std::vector<T> i_tmp(iter_.begin() + i * rows_, iter_.begin() + (i * rows_) + cols_);
+				std::vector<T> row_tmp(iter_.begin() + row * rows_, iter_.begin() + (row * rows_) + cols_);
+
+				std::swap_ranges(iter_.begin() + i * rows_, iter_.begin() + (i * rows_) + cols_,
+					   	row_tmp.begin());
+				std::swap_ranges(iter_.begin() + row * rows_, iter_.begin() + (row * rows_) + cols_, 
+						i_tmp.begin());
 			}
 		}
 		return id;
@@ -108,7 +104,7 @@ template <typename T>
 void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 {
 	p = p.pivot();
-	Matrix<T> m2 = p * m;
+	Matrix<T> m2 = p * mat_;
 
 	for (int j = 0; j < rows_; j++)
 	{
