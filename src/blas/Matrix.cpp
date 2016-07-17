@@ -15,18 +15,54 @@ Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::operator* (Matrix<T> a)
+Matrix<T> Matrix<T>::operator*(Matrix<T> m)
 {
-	Matrix<T> res = Matrix<T>(0, rows_, a.cdim());
+	Matrix<T> res = Matrix<T>(0, rows_, m.cdim());
 
 	for (int i = 0; i < rows_; i++)
 	{
-		for (int j = 0; j < a.cdim(); j++)
+		for (int j = 0; j < m.cdim(); j++)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
-				res(i, j) += mat_[i * rows_ + cols_] * a(i, j);
+				res(i, j) += mat_[i * rows_ + k] * m(i, j);
 			}
+		}
+	}
+
+	return res;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator*(T scalar)
+{
+	Matrix<T> res = Matrix<T>(rows_, cols_);
+
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			res(i, j) = mat_[i * rows_ + j] * scalar;
+		}
+	}
+	
+	return res;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator+(Matrix<T> m)
+{
+	if (rows_ != m.rdim() && cols_ != m.cdim()) {
+		// throw error	
+	}
+
+	Matrix<T> res = Matrix<T>(rows_, cols_);
+	
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			res(i, j) = mat_[i * rows_ + j] + m(i, j);
 		}
 	}
 

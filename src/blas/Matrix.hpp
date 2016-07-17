@@ -17,19 +17,15 @@ public:
 	// CONSTRUCTORS
 	Matrix(int r, int c);
 
-	Matrix(std::vector<std::vector<T>>& T_matrix)
-		: mat_(T_matrix)
-		, rows_(T_matrix.size())
-		, cols_(T_matrix[0].size())
-	{ }
-	
 	Matrix(T def_val, int r, int c)
 		: rows_(r)
 		, cols_(c)
 	{ mat_.resize(rows_ * cols_, def_val); }
 	
 	// OPERATOR OVERLOADS
-	Matrix<T> operator*(Matrix<T> a);
+	Matrix<T> operator*(Matrix<T> m);
+	Matrix<T> operator*(T scalar);
+	Matrix<T> operator+(Matrix<T> m);
 	T& operator()(int r, int c) { return mat_.at(r * rows_ + c); };
 	
 	// PRIVATE MEMBER ACCESS METHODS
