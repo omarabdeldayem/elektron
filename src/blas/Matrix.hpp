@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <numeric>
-#include <math.h>
+#include <cmath>
 
 namespace nlib
 {
@@ -34,13 +34,13 @@ public:
 
 	// MATRIX OPERATIONS
 	T tr();
+	T norm();
 	Matrix<T> tpose();
-	void luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
-	
+	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
+	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);	
 	//Matrix QRD();
 	//Matrix eigenD();
 	//Matrix choleskyD();
-	//int det();
 	void print();
 
 private:
@@ -52,6 +52,7 @@ private:
 	typename std::vector<T>::iterator iter_;
 
 	Matrix<T> pivot();
+	Matrix<T> bidiag();
 };
 
 // Creates r x c identity mat_rix
@@ -104,7 +105,7 @@ template <typename T>
 Matrix<T> Matrix<T>::operator+(Matrix<T> m)
 {
 	if (rows_ != m.rdim() && cols_ != m.cdim()) {
-		// throw error	
+		// TODO: throw error	
 	}
 
 	Matrix<T> res = Matrix<T>(rows_, cols_);
@@ -120,6 +121,25 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> m)
 	return res;
 }
 
+// Computes L_(2, 1) matrix norm 
+template <typename T>
+T Matrix<T>::norm()
+{
+	T norm = 0;
+	
+	for (int i = 0; i < rows_; i++)
+	{
+		T col_sum = 0;
+		for (int j = 0; j < cols_; j++)
+		{
+			col_sum += mat_(i, j);
+		}
+		norm += sqrt(col_sum);
+	}
+
+	return norm;
+}
+		
 template <typename T>
 Matrix<T> Matrix<T>::tpose()
 {
@@ -187,8 +207,17 @@ Matrix<T> Matrix<T>::pivot()
 	
 }
 
+// Golub-Kahan-Lanczos Bidiagonalization
 template <typename T>
-void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
+Matrix<T> Matrix<T>::bidiag() 
+{
+	// TODO: Implement
+	float beta_0 = 0;
+	return NULL;
+}
+
+template <typename T>
+void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 {
 	p = p.pivot();
 	Matrix<T> m2 = p * mat_;
@@ -215,6 +244,12 @@ void Matrix<T>::luD(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 			l(i, j) = (m2(i, j) - s) / u(j, j);
 		}
 	}
+}
+
+template <typename T>
+void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
+{
+	// TODO: Implement
 }
 
 // ------ DEBUG ------ //
