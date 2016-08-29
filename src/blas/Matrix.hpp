@@ -25,6 +25,7 @@ public:
 	// OPERATOR OVERLOADS
 	Matrix<T> operator*(Matrix<T> m);
 	Matrix<T> operator*(T scalar);
+	Matrix<T> operator/(T scalar);
 	Matrix<T> operator+(Matrix<T> m);
 	T& operator()(int r, int c) { return mat_.at(r * rows_ + c); };
 	
@@ -47,12 +48,13 @@ private:
 	int rows_;
 	int cols_;
 
-	// Default store mat_rix in row-major form
+	// Default store matrix in row-major form
 	std::vector<T> mat_;
 	typename std::vector<T>::iterator iter_;
 
 	Matrix<T> pivot();
 	Matrix<T> bidiag();
+	void householder(Matrix<T>& U, Matrix<T>& R);
 };
 
 // Creates r x c identity mat_rix
@@ -73,11 +75,11 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> m)
 
 	for (int i = 0; i < rows_; i++)
 	{
-		for (int j = 0; j < m.cdim(); j++)
+		for (int j = 0; j < res.cdim(); j++)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
-				res(i, j) += mat_[i * rows_ + k] * m(i, j);
+				res(i, j) += mat_[i * rows_ + k] * m(k, j);
 			}
 		}
 	}
@@ -98,6 +100,22 @@ Matrix<T> Matrix<T>::operator*(T scalar)
 		}
 	}
 	
+	return res;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator/(T scalar)
+{
+	Matrix<T> res = Matrix<T>(rows_, cols_);
+
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			res(i, j) = mat_[i * rows_ + j] / scalar;
+		}
+	}
+
 	return res;
 }
 
@@ -179,32 +197,44 @@ Matrix<T> Matrix<T>::pivot()
 		Matrix<T> id = Matrix<T>(rows_, cols_);
 		for (int i = 0; i < rows_; i++)
 		{
-			T maxv = mat_(i, i);
+			T maxv = (*this)(i, i);
 			int row = i;
 
 			for (int j = i; j < rows_; j++)
 			{
-				if (mat_(j, i) > maxv)
+				if ((*this)(j, i) > maxv)
 				{
-					maxv = mat_(j, i);
+					maxv = (*this)(j, i);
 					row = j;
 				}
 			}
 
 			if (i != row)
 			{
-				std::vector<T> i_tmp(iter_.begin() + i * rows_, iter_.begin() + (i * rows_) + cols_);
-				std::vector<T> row_tmp(iter_.begin() + row * rows_, iter_.begin() + (row * rows_) + cols_);
+				std::vector<T> i_tmp(mat_.begin() + i * rows_, mat_.begin() + (i * rows_) + cols_);
+				std::vector<T> row_tmp(mat_.begin() + row * rows_, mat_.begin() + (row * rows_) + cols_);
 
-				std::swap_ranges(iter_.begin() + i * rows_, iter_.begin() + (i * rows_) + cols_,
+				std::swap_ranges(mat_.begin() + i * rows_, mat_.begin() + (i * rows_) + cols_,
 					   	row_tmp.begin());
-				std::swap_ranges(iter_.begin() + row * rows_, iter_.begin() + (row * rows_) + cols_, 
+				std::swap_ranges(mat_.begin() + row * rows_, mat_.begin() + (row * rows_) + cols_, 
 						i_tmp.begin());
 			}
 		}
 		return id;
 	}
-	
+}
+
+template <typename T>
+void Matrix<T>::householder(Matrix<T>& U, Matrix<T>& R)
+{
+	// R initialized to this matrix
+	R = this;
+
+	for (int k = 0; k < cols_; k++) 
+	{
+		
+	}
+
 }
 
 // Golub-Kahan-Lanczos Bidiagonalization
@@ -220,7 +250,7 @@ template <typename T>
 void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 {
 	p = p.pivot();
-	Matrix<T> m2 = p * mat_;
+	Matrix<T> m2 = p * (*this);
 
 	for (int j = 0; j < rows_; j++)
 	{

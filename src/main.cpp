@@ -1,4 +1,5 @@
 #include "blas/Matrix.hpp"
+#include <iostream>
 
 int main()
 {
@@ -11,12 +12,28 @@ int main()
 	m(0, 0) = 3;
 	m(2, 1) = 5;
 
-//	m.luD(m_l, m_u, m_p);
+	m.lud(m_l, m_u, m_p);
+	std::cout << "LUDecomposition Start: \n" << "----------\n";
+	std::cout << "Matrix M: \n";
 	m.print();
+	std::cout << "Matrix L: \n";
 	m_l.print();
+	std::cout << "Matrix U: \n";
 	m_u.print();
+	std::cout << "Matrix P: \n";
 	m_p.print();
-
+	std::cout << "Matrix L * U: \n";
+	(m_l * m_u).print();
+	
+	std::cout << "Scalar Operations: \n" << "----------\n";
+	nlib::Matrix<int> x = nlib::Matrix<int>(3, 3);
+	x.print();
+	std::cout << "Multiply by 5\n";
+	x = x * 5;
+	x.print();
+	std::cout << "Divide by 5\n";
+	x = x / 5;
+	x.print();
 //	nlib::Matrix<double> m_T = m.tpose();
 //	m_T.print();
 
