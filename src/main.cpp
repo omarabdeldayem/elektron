@@ -34,6 +34,15 @@ int main()
 	std::cout << "Divide by 5\n";
 	x = x / 5;
 	x.print();
+
+	std::cout << "Matrix Operations: \n" << "----------\n";
+	nlib::Matrix<int> y = nlib::Matrix<int>(9, 4, 6);
+	y(0, 2) = 3;
+	y(2, 3) = 5;
+	y.print();
+	std::cout << "Tranposed: \n";
+	y = y.tpose();
+	y.print();	
 //	nlib::Matrix<double> m_T = m.tpose();
 //	m_T.print();
 

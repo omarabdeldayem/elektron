@@ -27,7 +27,7 @@ public:
 	Matrix<T> operator*(T scalar);
 	Matrix<T> operator/(T scalar);
 	Matrix<T> operator+(Matrix<T> m);
-	T& operator()(int r, int c) { return mat_.at(r * rows_ + c); };
+	T& operator()(int r, int c) { return mat_.at(r * cols_ + c); };
 	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
@@ -150,7 +150,7 @@ T Matrix<T>::norm()
 		T col_sum = 0;
 		for (int j = 0; j < cols_; j++)
 		{
-			col_sum += mat_(i, j);
+			col_sum += mat_[i * rows_ + j];
 		}
 		norm += sqrt(col_sum);
 	}
@@ -161,13 +161,12 @@ T Matrix<T>::norm()
 template <typename T>
 Matrix<T> Matrix<T>::tpose()
 {
-	Matrix<T> mat_T = Matrix<T>(NULL, cols_, rows_);
-
-	for (int i = 0; i < rows_; i++)
+	Matrix<T> mat_T = Matrix<T>(0, cols_, rows_);
+	for (int i = 0; i < mat_T.rdim(); i++)
 	{
-		for (int j = 0; j < cols_; j++)
+		for (int j = 0; j < mat_T.cdim(); j++)
 		{
-			mat_T(i, j) = mat_(j, i);
+			mat_T(i, j) = (*this)(j, i);
 		}
 	}
 
@@ -293,7 +292,7 @@ void Matrix<T>::print()
 		i += 1;	
 		std::cout << val << " ";
 		
-		if (i % rows_ == 0) {
+		if (i % cols_ == 0) {
 			std::cout << "\n";
 		}
 	}
