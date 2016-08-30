@@ -28,6 +28,7 @@ public:
 	Matrix<T> operator/(T scalar);
 	Matrix<T> operator+(Matrix<T> m);
 	T& operator()(int r, int c) { return mat_.at(r * cols_ + c); };
+	Matrix<T> operator()(int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
@@ -137,6 +138,23 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> m)
 	}
 
 	return res;
+}
+
+// Return submatrix from row i to row f, col i to col f exclusive
+template <typename T>
+Matrix<T> Matrix<T>::operator()(int r_i, int r_f, int c_i, int c_f)
+{
+	Matrix<T> sub = Matrix<T>(r_f - r_i, c_f - c_i);
+
+	for (int i = r_i; i < r_f; i++)
+	{
+		for (int j = c_i; j < c_f; j++)
+		{
+			sub(i, j) = (*this)(i, j);
+		}
+	}
+
+	return sub;
 }
 
 // Computes L_(2, 1) matrix norm 

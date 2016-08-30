@@ -42,7 +42,10 @@ int main()
 	y.print();
 	std::cout << "Tranposed: \n";
 	y = y.tpose();
-	y.print();	
+	y.print();
+	std::cout << "Sub-matrix: \n";
+	nlib::Matrix<int> y_sub = y(0, 1, 0, 4);
+	y_sub.print();	
 //	nlib::Matrix<double> m_T = m.tpose();
 //	m_T.print();
 
