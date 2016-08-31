@@ -15,8 +15,8 @@ class Matrix
 {
 public:
 	// CONSTRUCTORS
+	Matrix()  { };
 	Matrix(int r, int c);
-
 	Matrix(T def_val, int r, int c)
 		: rows_(r)
 		, cols_(c)
@@ -27,6 +27,7 @@ public:
 	Matrix<T> operator*(T scalar);
 	Matrix<T> operator/(T scalar);
 	Matrix<T> operator+(Matrix<T> m);
+	Matrix<T> operator-(Matrix<T> m);
 	T& operator()(int r, int c) { return mat_.at(r * cols_ + c); };
 	Matrix<T> operator()(int r_i, int r_f, int c_i, int c_f);
 	
@@ -36,26 +37,27 @@ public:
 
 	// MATRIX OPERATIONS
 	T tr();
-	T norm();
+	double norm();
 	Matrix<T> tpose();
+
+	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
-	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);	
-	//Matrix QRD();
-	//Matrix eigenD();
-	//Matrix choleskyD();
+	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
+	void qrd(Matrix<T>& Q, Matrix<T>& R);	
+	
+	// UTILITIES
 	void print();
 
 private:
 	int rows_;
 	int cols_;
 
-	// Default store matrix in row-major form
+	// Default: store matrix in row-major form
 	std::vector<T> mat_;
 	typename std::vector<T>::iterator iter_;
 
 	Matrix<T> pivot();
 	Matrix<T> bidiag();
-	void householder(Matrix<T>& U, Matrix<T>& R);
 };
 
 // Creates r x c identity mat_rix
@@ -80,7 +82,7 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> m)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
-				res(i, j) += mat_[i * rows_ + k] * m(k, j);
+				res(i, j) += mat_[i * cols_ + k] * m(k, j);
 			}
 		}
 	}
@@ -140,6 +142,27 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> m)
 	return res;
 }
 
+template <typename T>
+Matrix<T> Matrix<T>::operator-(Matrix<T> m)
+{
+	if (rows_ != m.rdim() && cols_ != m.cdim()) {
+		// TODO: throw error	
+	}
+
+	Matrix<T> res = Matrix<T>(rows_, cols_);
+	
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			res(i, j) = mat_[i * rows_ + j] - m(i, j);
+		}
+	}
+
+	return res;
+
+}
+
 // Return submatrix from row i to row f, col i to col f exclusive
 template <typename T>
 Matrix<T> Matrix<T>::operator()(int r_i, int r_f, int c_i, int c_f)
@@ -159,20 +182,19 @@ Matrix<T> Matrix<T>::operator()(int r_i, int r_f, int c_i, int c_f)
 
 // Computes L_(2, 1) matrix norm 
 template <typename T>
-T Matrix<T>::norm()
+double Matrix<T>::norm()
 {
-	T norm = 0;
+	double norm = 0;
 	
 	for (int i = 0; i < rows_; i++)
 	{
-		T col_sum = 0;
+		double col_sum = 0;
 		for (int j = 0; j < cols_; j++)
 		{
-			col_sum += mat_[i * rows_ + j];
+			col_sum += pow(mat_[i * rows_ + j], 2.0);
 		}
 		norm += sqrt(col_sum);
 	}
-
 	return norm;
 }
 		
@@ -241,17 +263,53 @@ Matrix<T> Matrix<T>::pivot()
 	}
 }
 
+// QR Decomposition using householder reflections
 template <typename T>
-void Matrix<T>::householder(Matrix<T>& U, Matrix<T>& R)
+void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
 {
-	// R initialized to this matrix
-	R = this;
+	// For numerical stability
+	double epsilon, alpha;
+	
+	Q = Matrix<T>(rows_, rows_);
+	R = *this;
 
-	for (int k = 0; k < cols_; k++) 
+	Matrix<T> u, v;
+	Matrix<T> P(rows_, rows_), I(rows_, rows_);
+	
+	for (int j = 0; j < cols_; j++) 
 	{
+		u = Matrix<T>(0, rows_, 1);
+		v = Matrix<T>(0, rows_, 1);
 		
-	}
+		epsilon = 0.0;
 
+		for (int i = j; i < rows_; i++)
+		{
+			u(i, 0) = R(i, j);
+			epsilon += u(i, 0) * u(i, 0);   	
+		}
+		
+		epsilon = sqrt(epsilon);
+		alpha = u(j, 0) < 0 ? epsilon : -epsilon; // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
+		epsilon = 0.0;	
+		
+		for (int i = j; i < rows_; i++)
+		{
+			v(i, 0) = i == j ? u(i, 0) + alpha : u(i, 0);
+			epsilon += v(i, 0) * v(i, 0);
+		}
+
+		epsilon = sqrt(epsilon);
+
+		if (epsilon > 0.0000000001)
+		{
+			for (int i = j; i < rows_; i++) v(i, 0) /= epsilon;
+
+			P = I - (v * v.tpose()) * 2.0;
+			R = P * R;
+			Q = Q * P;
+		}	
+	}
 }
 
 // Golub-Kahan-Lanczos Bidiagonalization
