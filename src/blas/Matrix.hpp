@@ -1,8 +1,10 @@
 #ifndef MATRIX_H_
 #define	MATRIX_H_
+#define QR_THRESHOLD 0.0000000001
 
 #include <stdexcept>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <numeric>
 #include <cmath>
@@ -54,7 +56,6 @@ private:
 
 	// Default: store matrix in row-major form
 	std::vector<T> mat_;
-	typename std::vector<T>::iterator iter_;
 
 	Matrix<T> pivot();
 	Matrix<T> bidiag();
@@ -65,7 +66,7 @@ template <typename T>
 Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
 {
 	mat_.resize(r * c, 0);
-	for (iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
+	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
 	{
 		*iter_ = 1;
 	}
@@ -219,7 +220,7 @@ T Matrix<T>::tr()
 	if (rows_ == cols_)
 	{
 		T sum = 0;
-		for (iter_ = mat_.begin(); iter_ < iter_.end(); iter_+=cols_+1)
+		for (auto iter_ = mat_.begin(); iter_ < iter_.end(); iter_+=cols_+1)
 		{
 			sum += *iter_;
 		}
@@ -290,7 +291,7 @@ void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
 		}
 		
 		epsilon = sqrt(epsilon);
-		alpha = u(j, 0) < 0 ? epsilon : -epsilon; // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
+		alpha = copysign(epsilon, -u(j, 0)); // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
 		epsilon = 0.0;	
 		
 		for (int i = j; i < rows_; i++)
@@ -366,13 +367,13 @@ void Matrix<T>::print()
 	for (T val : mat_)
 	{
 		i += 1;	
-		std::cout << val << " ";
+		std::cout << std::setw(16) << val << " ";
 		
 		if (i % cols_ == 0) {
 			std::cout << "\n";
 		}
 	}
-	std::cout.flush();
+	std::cout << std::endl;
 }
 
 
