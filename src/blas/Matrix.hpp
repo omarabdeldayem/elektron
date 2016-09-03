@@ -20,11 +20,6 @@ class Matrix
 public:
 	// CONSTRUCTORS
 	Matrix();
-//	Matrix(int r, int c);
-//	Matrix(T def_val, int r, int c)
-//		: rows_(r)
-//		, cols_(c)
-//	{ mat_.resize(rows_ * cols_, def_val); }
 	
 	// OPERATOR OVERLOADS
 	template<std::size_t MROWS, std::size_t MCOLS>
@@ -51,6 +46,7 @@ public:
 	// MATRIX DECOMPOSITIONS
 //	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
 //	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
+	void lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U);
 	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);	
 	
 	// UTILITIES
@@ -64,21 +60,10 @@ private:
 	int cols_;
 
 	// Default: store matrix in vector, row-major form 
-//	std::vector<T> mat_;
 	std::array<T, ROWS * COLS> mat_;
 //	Matrix<T> pivot();
 //	Matrix<T> bidiag();
 };
-
-// Creates r x c identity mat_rix
-//template <typename T, std::size_t ROWS, std::size_t COLS>
-//Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
-//{
-//	mat_.resize(r * c, 0);
-//	(*this).eye();
-//}
-//
-
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 Matrix<T, ROWS, COLS>::Matrix()
@@ -304,6 +289,47 @@ void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>&
 	}
 }
 
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U)
+{
+	for (int i = 0; i < rows_; i++) 
+	{
+		for (int j = 0; j < rows_; j++)
+		{
+			if (j < i)
+			{
+				L(j, i) = 0;
+			}
+			else 
+			{
+				L(j, i) = (*this)(j, i);
+				for (int k = 0; k < i; k++)
+				{
+					L(j, i) = L(j, i) - L(j, k) * U(k, i);
+				}
+			}
+		}
+		for (int j = 0; j < rows_; j++)
+		{
+			if (j < i)
+			{
+				U(i, j) = 0;
+			}
+			else if (j == i)
+			{
+				U(i, j) = 1;
+			}
+			else
+			{
+				U(i, j) = (*this)(i, j) / L(i, i);
+				for (int k = 0; k < i; k++)
+				{
+					U(i, j) = U(i, j) - (L(i, k) * U(k , j)) / L(i, i);
+				}
+			}
+		}
+	}
+}
 /**
 template <typename T>
 Matrix<T> Matrix<T>::pivot()
@@ -350,7 +376,8 @@ Matrix<T> Matrix<T>::bidiag()
 	return NULL;
 }
 
-template <typename T>
+**/
+/**template <typename T>
 void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 {
 	p = p.pivot();
@@ -378,14 +405,14 @@ void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 			l(i, j) = (m2(i, j) - s) / u(j, j);
 		}
 	}
-}
+} **/
 
 //template <typename T, std::size_t ROWS, std::size_t COLS>
 //void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
 //{
 	// TODO: Implement
 //}
-**/
+
 template <typename T, std::size_t ROWS, std::size_t COLS>
 void Matrix<T, ROWS, COLS>::zeros()
 {

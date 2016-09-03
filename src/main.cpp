@@ -35,26 +35,27 @@ int main()
 	y.sub(y_sub, 0, 1, 0, 4);
 	y_sub.print();	
 	
-/**	std::cout << "LUDecomposition Start: \n" << "----------\n";
-	nlib::Matrix<double> m = nlib::Matrix<double>(8.0, 3, 3);
-	nlib::Matrix<double> m_l = nlib::Matrix<double>(0.0, 3, 3),
-						m_u = nlib::Matrix<double>(0.0, 3, 3),
-						m_p = nlib::Matrix<double>(3, 3);
-
+	std::cout << "LUDecomposition Start: \n" << "----------\n";
+	nlib::Matrix<double, 3, 3> m;
+	nlib::Matrix<double, 3, 3> m_l;
+	nlib::Matrix<double, 3, 3> m_u;
+	m.ones();
+//	m_l.ones();
+//	m_u.ones();
+	m = m * 8;
+	
 	m(0, 0) = 3;
 	m(2, 1) = 5;
-	m.lud(m_l, m_u, m_p);
+	m.lud(m_l, m_u);
 	std::cout << "Matrix M: \n";
 	m.print();
 	std::cout << "Matrix L: \n";
 	m_l.print();
 	std::cout << "Matrix U: \n";
 	m_u.print();
-	std::cout << "Matrix P: \n";
-	m_p.print();
 	std::cout << "Matrix L * U: \n";
 	(m_l * m_u).print();
-**/
+
 	std::cout << "QRDecomposition Start: \n" << "----------\n";
 	nlib::Matrix<double, 3, 3> A;
 	nlib::Matrix<double, 3, 3> Q;
