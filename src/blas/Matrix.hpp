@@ -1,6 +1,5 @@
 #ifndef MATRIX_H_
 #define	MATRIX_H_
-#define QR_THRESHOLD 0.0000000001
 
 #include <stdexcept>
 #include <iostream>
@@ -11,6 +10,8 @@
 
 namespace nlib
 {
+
+const double QR_THRESHOLD = 0.0000000001;
 
 template<typename T>
 class Matrix
@@ -29,7 +30,7 @@ public:
 	Matrix<T> operator/(T scalar);
 	Matrix<T> operator+(Matrix<T> m);
 	Matrix<T> operator-(Matrix<T> m);
-	T& operator()(int r, int c) { return mat_.at(r * cols_ + c); };
+	T& operator()(int r, int c) { return mat_[r * cols_ + c]; };
 	Matrix<T> operator()(int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
@@ -56,6 +57,7 @@ private:
 	int rows_;
 	int cols_;
 
+	std::unique_ptr<T[]> nmat_;
 	// Default: store matrix in vector, row-major form 
 	std::vector<T> mat_;
 
@@ -99,7 +101,7 @@ Matrix<T> Matrix<T>::operator*(T scalar)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * rows_ + j] * scalar;
+			res(i, j) = mat_[i * cols_ + j] * scalar;
 		}
 	}
 	
@@ -115,7 +117,7 @@ Matrix<T> Matrix<T>::operator/(T scalar)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * rows_ + j] / scalar;
+			res(i, j) = mat_[i * cols_ + j] / scalar;
 		}
 	}
 
@@ -135,7 +137,7 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> m)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * rows_ + j] + m(i, j);
+			res(i, j) = mat_[i * cols_ + j] + m(i, j);
 		}
 	}
 
@@ -155,7 +157,7 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> m)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * rows_ + j] - m(i, j);
+			res(i, j) = mat_[i * cols_ + j] - m(i, j);
 		}
 	}
 
@@ -191,7 +193,7 @@ double Matrix<T>::norm()
 		double col_sum = 0;
 		for (int j = 0; j < cols_; j++)
 		{
-			col_sum += pow(mat_[i * rows_ + j], 2.0);
+			col_sum += pow(mat_[i * cols_ + j], 2.0);
 		}
 		norm += sqrt(col_sum);
 	}
@@ -263,6 +265,15 @@ Matrix<T> Matrix<T>::pivot()
 	}
 }
 
+// Golub-Kahan-Lanczos Bidiagonalization
+template <typename T>
+Matrix<T> Matrix<T>::bidiag() 
+{
+	// TODO: Implement
+	float beta_0 = 0;
+	return NULL;
+}
+
 // QR Decomposition using householder reflections
 template <typename T>
 void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
@@ -312,15 +323,6 @@ void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
 			Q = Q * P;
 		}	
 	}
-}
-
-// Golub-Kahan-Lanczos Bidiagonalization
-template <typename T>
-Matrix<T> Matrix<T>::bidiag() 
-{
-	// TODO: Implement
-	float beta_0 = 0;
-	return NULL;
 }
 
 template <typename T>
