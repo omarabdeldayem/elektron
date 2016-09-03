@@ -44,11 +44,10 @@ public:
 	Matrix<T, COLS, ROWS> tpose();
 
 	// MATRIX DECOMPOSITIONS
-//	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
-//	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
 	void lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U);
-	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);	
-	
+	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);		
+//	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
+
 	// UTILITIES
 	void zeros();
 	void ones();
@@ -59,10 +58,8 @@ private:
 	int rows_;
 	int cols_;
 
-	// Default: store matrix in vector, row-major form 
+	// Default: store matrix in array, row-major form 
 	std::array<T, ROWS * COLS> mat_;
-//	Matrix<T> pivot();
-//	Matrix<T> bidiag();
 };
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
@@ -289,6 +286,7 @@ void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>&
 	}
 }
 
+// LU Decomposition via Dolittle algorithm
 template <typename T, std::size_t ROWS, std::size_t COLS>
 void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U)
 {
@@ -330,82 +328,6 @@ void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>&
 		}
 	}
 }
-/**
-template <typename T>
-Matrix<T> Matrix<T>::pivot()
-{
-	if (rows_ == cols_)
-	{
-		Matrix<T> id = Matrix<T>(rows_, cols_);
-		for (int i = 0; i < rows_; i++)
-		{
-			T maxv = (*this)(i, i);
-			int row = i;
-
-			for (int j = i; j < rows_; j++)
-			{
-				if ((*this)(j, i) > maxv)
-				{
-					maxv = (*this)(j, i);
-					row = j;
-				}
-			}
-
-			if (i != row)
-			{
-				std::vector<T> i_tmp(mat_.begin() + i * rows_, mat_.begin() + (i * rows_) + cols_);
-				std::vector<T> row_tmp(mat_.begin() + row * rows_, mat_.begin() + (row * rows_) + cols_);
-
-				std::swap_ranges(mat_.begin() + i * rows_, mat_.begin() + (i * rows_) + cols_,
-					   	row_tmp.begin());
-				std::swap_ranges(mat_.begin() + row * rows_, mat_.begin() + (row * rows_) + cols_, 
-						i_tmp.begin());
-			}
-		}
-		return id;
-	}
-}
-
-
-// Golub-Kahan-Lanczos Bidiagonalization
-template <typename T>
-Matrix<T> Matrix<T>::bidiag() 
-{
-	// TODO: Implement
-	float beta_0 = 0;
-	return NULL;
-}
-
-**/
-/**template <typename T>
-void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
-{
-	p = p.pivot();
-	Matrix<T> m2 = p * (*this);
-
-	for (int j = 0; j < rows_; j++)
-	{
-		l(j, j) = 1.0;
-		for (int i = 0; i < j + 1; i++)
-		{
-			double s = 0.0;
-			for (int k = 0; k < i; k++)
-			{
-				s += u(k, j) * l(i, k);
-			}
-			u(i, j) = m2(i, j) - s;
-		}
-		for (int i = j; i < rows_; i++)
-		{
-			double s = 0.0;
-			for (int k = 0; k < j; k++)
-			{
-				s += u(k, j) * l(i, k);
-			}
-			l(i, j) = (m2(i, j) - s) / u(j, j);
-		}
-	}
-} **/
 
 //template <typename T, std::size_t ROWS, std::size_t COLS>
 //void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)

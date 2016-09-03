@@ -1,5 +1,4 @@
 #include "blas/Matrix.hpp"
-#include "blas/PoolManager.hpp"
 #include <iostream>
 
 int main()
