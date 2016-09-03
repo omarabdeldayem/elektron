@@ -54,7 +54,7 @@ private:
 	int rows_;
 	int cols_;
 
-	// Default: store matrix in row-major form
+	// Default: store matrix in vector, row-major form 
 	std::vector<T> mat_;
 
 	Matrix<T> pivot();
@@ -302,7 +302,7 @@ void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
 
 		epsilon = sqrt(epsilon);
 
-		if (epsilon > 0.0000000001)
+		if (epsilon > QR_THRESHOLD)
 		{
 			for (int i = j; i < rows_; i++) v(i, 0) /= epsilon;
 
