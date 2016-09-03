@@ -1,37 +1,43 @@
 #ifndef MATRIX_H_
 #define	MATRIX_H_
 
-#include <stdexcept>
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <array>
 #include <numeric>
 #include <cmath>
+#include <cstddef>
 
 namespace nlib
 {
 
 const double QR_THRESHOLD = 0.0000000001;
 
-template<typename T>
+template<typename T, std::size_t ROWS, std::size_t COLS>
 class Matrix
 {
 public:
 	// CONSTRUCTORS
-	Matrix(int r, int c);
-	Matrix(T def_val, int r, int c)
-		: rows_(r)
-		, cols_(c)
-	{ mat_.resize(rows_ * cols_, def_val); }
+	Matrix();
+//	Matrix(int r, int c);
+//	Matrix(T def_val, int r, int c)
+//		: rows_(r)
+//		, cols_(c)
+//	{ mat_.resize(rows_ * cols_, def_val); }
 	
 	// OPERATOR OVERLOADS
-	Matrix<T> operator*(Matrix<T> m);
-	Matrix<T> operator*(T scalar);
-	Matrix<T> operator/(T scalar);
-	Matrix<T> operator+(Matrix<T> m);
-	Matrix<T> operator-(Matrix<T> m);
+	template<std::size_t MROWS, std::size_t MCOLS>
+	Matrix<T, ROWS, MCOLS> operator*(Matrix<T, MROWS, MCOLS> M);
+	
+	Matrix<T, ROWS, COLS> operator*(T scalar);
+	Matrix<T, ROWS, COLS> operator/(T scalar);
+	Matrix<T, ROWS, COLS> operator+(Matrix<T, ROWS, COLS> M);
+	Matrix<T, ROWS, COLS> operator-(Matrix<T, ROWS, COLS> M);
 	T& operator()(int r, int c) { return mat_[r * cols_ + c]; };
-	Matrix<T> operator()(int r_i, int r_f, int c_i, int c_f);
+
+	template<std::size_t MROWS, std::size_t MCOLS>
+	Matrix<T, MROWS, MCOLS> operator()(int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
@@ -40,12 +46,12 @@ public:
 	// MATRIX OPERATIONS
 	T trace();
 	double norm();
-	Matrix<T> tpose();
+	Matrix<T, COLS, ROWS> tpose();
 
 	// MATRIX DECOMPOSITIONS
-	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
-	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
-	void qrd(Matrix<T>& Q, Matrix<T>& R);	
+//	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
+//	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
+//	void qrd(Matrix<T>& Q, Matrix<T>& R);	
 	
 	// UTILITIES
 	void zeros();
@@ -57,26 +63,37 @@ private:
 	int rows_;
 	int cols_;
 
-	std::unique_ptr<T[]> nmat_;
 	// Default: store matrix in vector, row-major form 
-	std::vector<T> mat_;
-
-	Matrix<T> pivot();
-	Matrix<T> bidiag();
+//	std::vector<T> mat_;
+	std::array<T, ROWS * COLS> mat_;
+//	Matrix<T> pivot();
+//	Matrix<T> bidiag();
 };
 
 // Creates r x c identity mat_rix
-template <typename T>
-Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
+//template <typename T, std::size_t ROWS, std::size_t COLS>
+//Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
+//{
+//	mat_.resize(r * c, 0);
+//	(*this).eye();
+//}
+//
+
+
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS>::Matrix()
 {
-	mat_.resize(r * c, 0);
-	(*this).eye();
+	rows_ = static_cast<int>(ROWS);
+	cols_ = static_cast<int>(COLS);
+
+	this->ones();
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator*(Matrix<T> m)
+template <typename T, std::size_t ROWS, std::size_t COLS>
+template <std::size_t MROWS, std::size_t MCOLS>
+Matrix<T, ROWS, MCOLS> Matrix<T, ROWS, COLS>::operator*(Matrix<T, MROWS, MCOLS> M)
 {
-	Matrix<T> res = Matrix<T>(0, rows_, m.cdim());
+	Matrix<T, ROWS, MCOLS> res = Matrix<T, ROWS, MCOLS>();
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -84,7 +101,7 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> m)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
-				res(i, j) += mat_[i * cols_ + k] * m(k, j);
+				res(i, j) += mat_[i * cols_ + k] * M(k, j);
 			}
 		}
 	}
@@ -92,10 +109,10 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> m)
 	return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator*(T scalar)
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator*(T scalar)
 {
-	Matrix<T> res = Matrix<T>(rows_, cols_);
+	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -108,10 +125,10 @@ Matrix<T> Matrix<T>::operator*(T scalar)
 	return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator/(T scalar)
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator/(T scalar)
 {
-	Matrix<T> res = Matrix<T>(rows_, cols_);
+	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -124,40 +141,40 @@ Matrix<T> Matrix<T>::operator/(T scalar)
 	return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator+(Matrix<T> m)
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator+(Matrix<T, ROWS, COLS> M)
 {
-	if (rows_ != m.rdim() && cols_ != m.cdim()) {
+	if (rows_ != M.rdim() && cols_ != M.cdim()) {
 		// TODO: throw error	
 	}
 
-	Matrix<T> res = Matrix<T>(rows_, cols_);
+	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
 	
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * cols_ + j] + m(i, j);
+			res(i, j) = mat_[i * cols_ + j] + M(i, j);
 		}
 	}
 
 	return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator-(Matrix<T> m)
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
 {
-	if (rows_ != m.rdim() && cols_ != m.cdim()) {
+	if (rows_ != M.rdim() && cols_ != M.cdim()) {
 		// TODO: throw error	
 	}
 
-	Matrix<T> res = Matrix<T>(rows_, cols_);
+	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
 	
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			res(i, j) = mat_[i * cols_ + j] - m(i, j);
+			res(i, j) = mat_[i * cols_ + j] - M(i, j);
 		}
 	}
 
@@ -166,10 +183,17 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> m)
 }
 
 // Return submatrix from row i to row f, col i to col f exclusive
-template <typename T>
-Matrix<T> Matrix<T>::operator()(int r_i, int r_f, int c_i, int c_f)
+// 
+template <typename T, std::size_t ROWS, std::size_t COLS>
+template <std::size_t MROWS, std::size_t MCOLS>
+Matrix<T, MROWS, MCOLS> Matrix<T, ROWS, COLS>::operator()(int r_i, int r_f, int c_i, int c_f)
 {
-	Matrix<T> sub = Matrix<T>(r_f - r_i, c_f - c_i);
+	if (static_cast<int>(MROWS) != (r_f - r_i) || static_cast<int>(MCOLS) != (c_f - c_i))
+	{
+		return NULL;
+	}
+
+	Matrix<T, MROWS, MCOLS> sub;
 
 	for (int i = r_i; i < r_f; i++)
 	{
@@ -183,8 +207,8 @@ Matrix<T> Matrix<T>::operator()(int r_i, int r_f, int c_i, int c_f)
 }
 
 // Computes L_(2, 1) matrix norm 
-template <typename T>
-double Matrix<T>::norm()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+double Matrix<T, ROWS, COLS>::norm()
 {
 	double norm = 0;
 	
@@ -200,10 +224,10 @@ double Matrix<T>::norm()
 	return norm;
 }
 		
-template <typename T>
-Matrix<T> Matrix<T>::tpose()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, COLS, ROWS> Matrix<T, ROWS, COLS>::tpose()
 {
-	Matrix<T> mat_T = Matrix<T>(0, cols_, rows_);
+	Matrix<T, COLS, ROWS> mat_T = Matrix<T, COLS, ROWS>();
 	for (int i = 0; i < mat_T.rdim(); i++)
 	{
 		for (int j = 0; j < mat_T.cdim(); j++)
@@ -215,21 +239,22 @@ Matrix<T> Matrix<T>::tpose()
 	return mat_T;
 }
 
-template <typename T>
-T Matrix<T>::trace()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+T Matrix<T, ROWS, COLS>::trace()
 {
 	if (rows_ == cols_)
 	{
 		T sum = 0;
-		for (auto iter_ = mat_.begin(); iter_ < iter_.end(); iter_+=cols_+1)
+		for (auto it_ = mat_.begin(); it_ < it_.end(); it_+=cols_+1)
 		{
-			sum += *iter_;
+			sum += *it_;
 		}
 		return sum;
 	}
 	return NULL;
 }
 
+/**
 template <typename T>
 Matrix<T> Matrix<T>::pivot()
 {
@@ -355,42 +380,45 @@ void Matrix<T>::lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p)
 	}
 }
 
-template <typename T>
-void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
-{
+//template <typename T, std::size_t ROWS, std::size_t COLS>
+//void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
+//{
 	// TODO: Implement
-}
-
-template <typename T>
-void Matrix<T>::zeros()
+//}
+**/
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::zeros()
 {
-	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
-		*iter_ = 0;
+		*it_ = 0;
 	}
 }
 
-template <typename T>
-void Matrix<T>::ones()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::ones()
 {
-	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
-		*iter_ = 1;
+		*it_ = 1;
 	}
 }
 
-template <typename T>
-void Matrix<T>::eye()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::eye()
 {
-	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
+	for (int i = 0; i < rows_; i++)
 	{
-		*iter_ = 1;
+		for (int j = 0; j < cols_; j++)
+		{
+			mat_[i * cols_ + j] =  (i == j) ? 1 : 0;
+		}
 	}
 }
 
 // ------ DEBUG ------ //
-template <typename T>
-void Matrix<T>::print()
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::print()
 {
 	int i = 0;
 

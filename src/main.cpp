@@ -6,27 +6,29 @@ int main()
 {
 	// Test
 	std::cout << "Scalar Operations: \n" << "----------\n";
-	nlib::Matrix<int> x = nlib::Matrix<int>(1, 3, 3);
+	nlib::Matrix<int, 4, 4> x;
 	x.print();
 	std::cout << "Multiply by 5\n";
 	x = x * 5;
 	x.print();
-	std::cout << "L_(2, 1) norm: " << x.norm() << "\n"; 
+	std::cout << "L_(2, 1) norm: " << x.norm() << "\n" << "\n"; 
 	std::cout << "Divide by 5\n";
 	x = x / 5;
 	x.print();
 
 
 	std::cout << "Matrix Operations: \n" << "----------\n";
-	nlib::Matrix<int> y = nlib::Matrix<int>(9, 4, 6);
+	nlib::Matrix<int, 6, 4> y;
+	nlib::Matrix<int, 4, 6> yt;
 	y(0, 2) = 3;
 	y(2, 3) = 5;
 	y.print();
 	std::cout << "Tranposed: \n";
-	y = y.tpose();
-	y.print();
-	std::cout << "Sub-matrix: \n";
-	nlib::Matrix<int> y_sub = y(0, 1, 0, 4);
+	yt = y.tpose();
+	yt.print();
+/**	std::cout << "Sub-matrix: \n";
+	nlib::Matrix<int, 1, 4> y_sub;
+	y_sub = y(0, 1, 0, 4);
 	y_sub.print();	
 	
 	std::cout << "LUDecomposition Start: \n" << "----------\n";
@@ -70,7 +72,7 @@ int main()
 	std::cout << "Matrix R: \n";
 	R.print();
 	std::cout << "Matrix Q * R: \n";	
-	(Q * R).print();
+	(Q * R).print(); **/
 
 	return 0;
 }
