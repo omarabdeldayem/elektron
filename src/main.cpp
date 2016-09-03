@@ -51,7 +51,8 @@ int main()
 
 	std::cout << "QRDecomposition Start: \n" << "----------\n";
 	nlib::Matrix<double> A(3, 3);
-	nlib::Matrix<double> Q, R;
+	nlib::Matrix<double> Q(A.rdim(), A.rdim());
+   	nlib::Matrix<double> R(A.rdim(), A.cdim());
 	A(0, 0) = 12; 
 	A(0, 1) = -51;
 	A(0, 2) = 4;

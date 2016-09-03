@@ -17,7 +17,6 @@ class Matrix
 {
 public:
 	// CONSTRUCTORS
-	Matrix()  { };
 	Matrix(int r, int c);
 	Matrix(T def_val, int r, int c)
 		: rows_(r)
@@ -38,7 +37,7 @@ public:
 	inline int cdim() { return cols_; };
 
 	// MATRIX OPERATIONS
-	T tr();
+	T trace();
 	double norm();
 	Matrix<T> tpose();
 
@@ -48,6 +47,9 @@ public:
 	void qrd(Matrix<T>& Q, Matrix<T>& R);	
 	
 	// UTILITIES
+	void zeros();
+	void ones();
+	void eye();
 	void print();
 
 private:
@@ -66,10 +68,7 @@ template <typename T>
 Matrix<T>::Matrix(int r, int c) : rows_(r), cols_(c)
 {
 	mat_.resize(r * c, 0);
-	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
-	{
-		*iter_ = 1;
-	}
+	(*this).eye();
 }
 
 template <typename T>
@@ -215,7 +214,7 @@ Matrix<T> Matrix<T>::tpose()
 }
 
 template <typename T>
-T Matrix<T>::tr()
+T Matrix<T>::trace()
 {
 	if (rows_ == cols_)
 	{
@@ -269,12 +268,14 @@ template <typename T>
 void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
 {
 	// For numerical stability
-	double epsilon, alpha;
+	double epsilon = 0.0;
+	double alpha = 0.0;
 	
 	Q = Matrix<T>(rows_, rows_);
 	R = *this;
 
-	Matrix<T> u, v;
+	Matrix<T> u(0, rows_, 1); 
+	Matrix<T> v(0, rows_, 1);
 	Matrix<T> P(rows_, rows_), I(rows_, rows_);
 	
 	for (int j = 0; j < cols_; j++) 
@@ -356,6 +357,33 @@ template <typename T>
 void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
 {
 	// TODO: Implement
+}
+
+template <typename T>
+void Matrix<T>::zeros()
+{
+	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_++)
+	{
+		*iter_ = 0;
+	}
+}
+
+template <typename T>
+void Matrix<T>::ones()
+{
+	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_++)
+	{
+		*iter_ = 1;
+	}
+}
+
+template <typename T>
+void Matrix<T>::eye()
+{
+	for (auto iter_ = mat_.begin(); iter_ < mat_.end(); iter_+=cols_+1)
+	{
+		*iter_ = 1;
+	}
 }
 
 // ------ DEBUG ------ //
