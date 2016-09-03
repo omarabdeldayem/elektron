@@ -20,12 +20,16 @@ int main()
 	std::cout << "Matrix Operations: \n" << "----------\n";
 	nlib::Matrix<int, 6, 4> y;
 	nlib::Matrix<int, 4, 6> yt;
+	y.ones();
 	y(0, 2) = 3;
 	y(2, 3) = 5;
 	y.print();
 	std::cout << "Tranposed: \n";
 	yt = y.tpose();
 	yt.print();
+	std::cout << "Multiplied: \n";
+	nlib::Matrix<int, 6, 6> prod = y * yt;
+	prod.print();
 	std::cout << "Sub-matrix: \n";
 	nlib::Matrix<int, 1, 4> y_sub;
 	y.sub(y_sub, 0, 1, 0, 4);
@@ -50,11 +54,11 @@ int main()
 	m_p.print();
 	std::cout << "Matrix L * U: \n";
 	(m_l * m_u).print();
-
+**/
 	std::cout << "QRDecomposition Start: \n" << "----------\n";
-	nlib::Matrix<double> A(3, 3);
-	nlib::Matrix<double> Q(A.rdim(), A.rdim());
-   	nlib::Matrix<double> R(A.rdim(), A.cdim());
+	nlib::Matrix<double, 3, 3> A;
+	nlib::Matrix<double, 3, 3> Q;
+   	nlib::Matrix<double, 3, 3> R;
 	A(0, 0) = 12; 
 	A(0, 1) = -51;
 	A(0, 2) = 4;
@@ -72,7 +76,7 @@ int main()
 	std::cout << "Matrix R: \n";
 	R.print();
 	std::cout << "Matrix Q * R: \n";	
-	(Q * R).print(); **/
+	(Q * R).print(); 
 
 	return 0;
 }

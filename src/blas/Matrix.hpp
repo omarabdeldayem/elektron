@@ -51,7 +51,7 @@ public:
 	// MATRIX DECOMPOSITIONS
 //	void lud(Matrix<T>& l, Matrix<T>& u, Matrix<T>& p);
 //	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
-//	void qrd(Matrix<T>& Q, Matrix<T>& R);	
+	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);	
 	
 	// UTILITIES
 	void zeros();
@@ -86,14 +86,14 @@ Matrix<T, ROWS, COLS>::Matrix()
 	rows_ = static_cast<int>(ROWS);
 	cols_ = static_cast<int>(COLS);
 
-	this->ones();
+	this->zeros();
 }
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 template <std::size_t MROWS, std::size_t MCOLS>
 Matrix<T, ROWS, MCOLS> Matrix<T, ROWS, COLS>::operator*(Matrix<T, MROWS, MCOLS> M)
 {
-	Matrix<T, ROWS, MCOLS> res = Matrix<T, ROWS, MCOLS>();
+	Matrix<T, ROWS, MCOLS> res;
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -250,6 +250,60 @@ T Matrix<T, ROWS, COLS>::trace()
 	return NULL;
 }
 
+// QR Decomposition using householder reflections
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R)
+{
+	// For numerical stability
+	double epsilon = 0.0;
+	double alpha = 0.0;
+	
+	Q.eye();
+	R = *this;
+
+	Matrix<T, ROWS, 1> u; 
+	Matrix<T, ROWS, 1> v;
+	Matrix<T, ROWS, ROWS> P;
+   	Matrix<T, ROWS, ROWS> I;
+
+	I.eye();
+		
+	for (int j = 0; j < cols_; j++) 
+	{
+		u.zeros();
+		v.zeros();
+		
+		epsilon = 0.0;
+
+		for (int i = j; i < rows_; i++)
+		{
+			u(i, 0) = R(i, j);
+			epsilon += u(i, 0) * u(i, 0);   	
+		}
+		
+		epsilon = sqrt(epsilon);
+		alpha = copysign(epsilon, -u(j, 0)); // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
+		epsilon = 0.0;	
+		
+		for (int i = j; i < rows_; i++)
+		{
+			v(i, 0) = i == j ? u(i, 0) + alpha : u(i, 0);
+			epsilon += v(i, 0) * v(i, 0);
+		}
+
+		epsilon = sqrt(epsilon);
+
+		if (epsilon > QR_THRESHOLD)
+		{
+			for (int i = j; i < rows_; i++) v(i, 0) /= epsilon;
+
+			P = I - (v * v.tpose()) * 2.0;
+			R = P * R;
+			Q = Q * P;
+		}	
+	}
+}
+
 /**
 template <typename T>
 Matrix<T> Matrix<T>::pivot()
@@ -286,6 +340,7 @@ Matrix<T> Matrix<T>::pivot()
 	}
 }
 
+
 // Golub-Kahan-Lanczos Bidiagonalization
 template <typename T>
 Matrix<T> Matrix<T>::bidiag() 
@@ -293,57 +348,6 @@ Matrix<T> Matrix<T>::bidiag()
 	// TODO: Implement
 	float beta_0 = 0;
 	return NULL;
-}
-
-// QR Decomposition using householder reflections
-template <typename T>
-void Matrix<T>::qrd(Matrix<T>& Q, Matrix<T>& R)
-{
-	// For numerical stability
-	double epsilon = 0.0;
-	double alpha = 0.0;
-	
-	Q = Matrix<T>(rows_, rows_);
-	R = *this;
-
-	Matrix<T> u(0, rows_, 1); 
-	Matrix<T> v(0, rows_, 1);
-	Matrix<T> P(rows_, rows_), I(rows_, rows_);
-	
-	for (int j = 0; j < cols_; j++) 
-	{
-		u = Matrix<T>(0, rows_, 1);
-		v = Matrix<T>(0, rows_, 1);
-		
-		epsilon = 0.0;
-
-		for (int i = j; i < rows_; i++)
-		{
-			u(i, 0) = R(i, j);
-			epsilon += u(i, 0) * u(i, 0);   	
-		}
-		
-		epsilon = sqrt(epsilon);
-		alpha = copysign(epsilon, -u(j, 0)); // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
-		epsilon = 0.0;	
-		
-		for (int i = j; i < rows_; i++)
-		{
-			v(i, 0) = i == j ? u(i, 0) + alpha : u(i, 0);
-			epsilon += v(i, 0) * v(i, 0);
-		}
-
-		epsilon = sqrt(epsilon);
-
-		if (epsilon > QR_THRESHOLD)
-		{
-			for (int i = j; i < rows_; i++) v(i, 0) /= epsilon;
-
-			P = I - (v * v.tpose()) * 2.0;
-			R = P * R;
-			Q = Q * P;
-		}	
-	}
 }
 
 template <typename T>
