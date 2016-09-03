@@ -26,12 +26,12 @@ int main()
 	std::cout << "Tranposed: \n";
 	yt = y.tpose();
 	yt.print();
-/**	std::cout << "Sub-matrix: \n";
+	std::cout << "Sub-matrix: \n";
 	nlib::Matrix<int, 1, 4> y_sub;
-	y_sub = y(0, 1, 0, 4);
+	y.sub(y_sub, 0, 1, 0, 4);
 	y_sub.print();	
 	
-	std::cout << "LUDecomposition Start: \n" << "----------\n";
+/**	std::cout << "LUDecomposition Start: \n" << "----------\n";
 	nlib::Matrix<double> m = nlib::Matrix<double>(8.0, 3, 3);
 	nlib::Matrix<double> m_l = nlib::Matrix<double>(0.0, 3, 3),
 						m_u = nlib::Matrix<double>(0.0, 3, 3),

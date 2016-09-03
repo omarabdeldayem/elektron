@@ -37,7 +37,7 @@ public:
 	T& operator()(int r, int c) { return mat_[r * cols_ + c]; };
 
 	template<std::size_t MROWS, std::size_t MCOLS>
-	Matrix<T, MROWS, MCOLS> operator()(int r_i, int r_f, int c_i, int c_f);
+	void sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
@@ -186,24 +186,20 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
 // 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 template <std::size_t MROWS, std::size_t MCOLS>
-Matrix<T, MROWS, MCOLS> Matrix<T, ROWS, COLS>::operator()(int r_i, int r_f, int c_i, int c_f)
+void Matrix<T, ROWS, COLS>::sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int c_i, int c_f)
 {
 	if (static_cast<int>(MROWS) != (r_f - r_i) || static_cast<int>(MCOLS) != (c_f - c_i))
 	{
-		return NULL;
+		return;
 	}
-
-	Matrix<T, MROWS, MCOLS> sub;
 
 	for (int i = r_i; i < r_f; i++)
 	{
 		for (int j = c_i; j < c_f; j++)
 		{
-			sub(i, j) = (*this)(i, j);
+			M(i, j) = (*this)(i, j);
 		}
 	}
-
-	return sub;
 }
 
 // Computes L_(2, 1) matrix norm 
