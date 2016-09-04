@@ -1,4 +1,6 @@
 #include "blas/Matrix.hpp"
+#include "blas/Solver.hpp"
+
 #include <iostream>
 
 int main()
