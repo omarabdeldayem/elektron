@@ -1,13 +1,14 @@
 #ifndef MATRIX_H_
 #define	MATRIX_H_
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
+#include <algorithm>
 #include <array>
-#include <numeric>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
+#include <iomanip>
+#include <numeric>
+#include <vector>
 
 namespace nlib
 {
@@ -46,7 +47,7 @@ public:
 	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U);
 	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);		
-//	void svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v);
+	void svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>& S, Matrix<T, COLS, COLS>& V_T);
 
 	// UTILITIES
 	void zeros();
@@ -329,11 +330,144 @@ void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>&
 	}
 }
 
-//template <typename T, std::size_t ROWS, std::size_t COLS>
-//void Matrix<T>::svd(Matrix<T>& u, Matrix<T>& sigma, Matrix<T>& v)
-//{
-	// TODO: Implement
-//}
+template <typename T, std::size_t ROWS, std::size_t COLS>
+void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>& S, Matrix<T, COLS, COLS>& V_T)
+{
+	if (rows_ < cols_) 
+	{
+		return;
+	}
+
+	int l = 0;
+	
+	double scale = 0.0;
+	double anorm = 0.0;
+	double f = 0.0;
+	double g = 0.0;
+	double h = 0.0;
+	double s = 0.0;
+
+	Matrix<T, 1, COLS> rv1;
+
+	U = *this;
+	
+	// Householder reduction into bidiagonal form
+	for (int i = 0; i < cols_; i++)
+	{
+		l = i + 1;
+
+		rv1[i] = scale * g;
+		
+		// Reset g, scale, s
+		scale = 0.0;
+		g = 0.0;
+		s = 0.0;
+
+		if (i < rows_)
+		{
+			for (int k = i; k < rows_; k++)
+			{
+				scale += fabs(U(k, i));
+			}
+
+			if (scale)
+			{
+				for (int k = i; k < rows_; k++)
+				{
+					U(k, i) = U(k, i) / scale;
+					s += U(k, i) * U(k, i);
+				}
+
+				f = U(i, i);
+				g = -copysign(sqrt(s), f);
+				h = f * g - s;
+				U(i, i) = f - g;
+
+				if (i != cols_ - 1)
+				{
+					for (int j = l; j < cols_; j++)
+					{
+						s = 0.0;
+						
+						for (int k = i; k < rows_; k++)
+						{
+							s += U(k, i) * U(k, j); 
+						}
+						
+						f = s / h;
+						
+						for (int k = i; k < rows_; k++)
+						{
+							U(k, j) += f * U(k, i);
+						}
+					}
+				}
+
+				for (int k = i; k < rows_; k++)
+				{
+					U(k, i) = U(k, i) * scale;
+				}
+
+			}
+		}
+		S(i, i) = g * scale;
+	
+		scale = 0.0;
+		g = 0.0;
+		s = 0.0;
+		
+		if (i < rows_ && i != cols_ - 1)
+		{
+			for (int k = l; k < cols_; k++)
+			{
+				scale += fabs(U(i, k));
+			}
+
+			if (scale)
+			{
+				for (int k = l; k < cols_; k++)
+				{
+					U(i, k) = U(i, k) / scale;
+					s += U(i, k) * U(i, k);
+				}
+			
+				f = U(i, l);
+				g = -copysign(sqrt(s), f);
+				h = f * g - s;
+				U(i, l) = f - g;
+
+				for (int k = l; k < cols_; k++)
+				{
+					rv1(1, k) = U(i, k) / h;
+				}
+
+				if (i != rows_ - 1)
+				{
+					for (int j = l; j < rows_; j++)
+					{
+						s = 0.0;
+
+						for (int k = l; k < cols_; k++)
+						{
+							s += U(j, k) * U(i, k);
+						}
+						for (int k = l; k < cols_; k++)
+						{
+							U(j, k) += s * rv1(1, k);
+						}
+					}
+				}
+
+				for (int k = l; k < cols_; k++)
+				{
+					U(i, k) = U(i, k) * scale;
+				}
+			}
+		}
+		anorm = max(anorm, (fabs(S(i, i)) + fabs(rv1(1, i)))); 
+	}
+
+}
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
 void Matrix<T, ROWS, COLS>::zeros()
