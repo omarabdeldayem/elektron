@@ -464,8 +464,96 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 				}
 			}
 		}
-		anorm = max(anorm, (fabs(S(i, i)) + fabs(rv1(1, i)))); 
+		anorm = max(anorm, (fabs(S(i, i)) + fabs(rv1(1, i))));
 	}
+	// -------------------------------------------------------------- //
+	
+	// Accumulate left-hand / right-hand transformations	
+	for (int i = cols_ - 1; i >= 0; i--)
+	{
+		if (i < cols_ -1)
+		{
+			if (g)
+			{
+				for (int j = l; j < cols_; j++)
+				{
+					V_T(j, i) = (U(i, j) / U(i, l)) / g;
+				}
+				for (int j = l; j < cols_; j++)
+				{
+					s = 0.0;
+					for (int k = l; k < cols_; k++)
+					{
+						s += U(i, k) * V_T(k, j);
+					}
+					for (int k = l; k < cols_; k++)
+					{
+						V_T(k, j) += s * V_T(k, i);
+					}
+				}
+			}
+			for (int j = l; j < cols_; j++)
+			{
+				V_T(i, j) = 0.0;
+				V_T(j, i) = 0.0;
+			}
+		}
+		V_T(i, i) = 1.0;
+		g = rv1(1, i);
+		l = i;
+	}
+	
+	for (int i = cols_ - 1; i >= 0; i--)
+	{
+		l = i + 1;
+		g = S(i, i);
+
+		if (i < cols_ - 1)
+		{
+			for (int j = l; j < cols_; j++)
+			{
+				U(i, j) = 0.0;
+			}
+		}	
+		if (g)
+		{
+			g = 1.0 / g;
+			
+			if (i != rows_ - 1)
+			{
+				for (int j = l; j < cols_; j++)
+				{
+					s = 0.0;
+					
+					for (int k = l; k < rows_; k++)
+					{
+						s += U(k, i) * U(k, j);
+					}
+					
+					f = (s / U(i, i)) * g;
+					
+					for (int k = l; k < rows_; k++)
+					{
+						U(k, j) += f * U(k, i);
+					}
+				}
+			}
+			
+			for (int j = i; j < rows_; j++)
+			{
+				U(j, i) = U(j, i) * g;
+			}
+		}
+		else
+		{
+			for (int j = i; j < rows_; j++)
+			{
+				U(j, i) = 0.0;
+			}
+		}	
+		++U(i, i);
+	}
+	// -------------------------------------------------------//
 
 }
 
