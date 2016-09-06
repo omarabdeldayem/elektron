@@ -566,6 +566,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	}
 	// ----------------------------------------------------------------//
 	
+	// Diagonalize
 	for (int k = cols_ - 1; k >= 0; k--)
 	{
 		for (its = 0; its < SVD_NUM_ITERATIONS; its++)
@@ -637,8 +638,69 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			// NO CONVERGENCE
 			return;
 		}
+		
+		x = S(l, l);
+		nm = k - 1;
+		y = S(nm, nm);
+		g = rv1(1, nm);
+		h = rv1(1, k);
+		f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
+		g = pythagorean(f, 1.0);
+		f = ((x - z) * (x + z) + h * ((y / (f + copysign(g, f))) - h)) / x;
 
+		// QR transformation
+		c = 1.0;
+		s = 1.0;
 
+		for (int j = l; j <= nm; j++)
+		{
+			int i = j + 1;
+			g = rv1(1, i);
+			y = S(i, i);
+			h = s * g;
+			g = c * g;
+			z = pythagorean(f, h);
+			rv1(1, j) = z;
+			c = f / z;
+			s = h / z;
+			f = (x * c) + (g * s);
+			g = (g * c) - (x * s);
+			h = y * s;
+			y = y * c;
+			
+			for (int jj = 0; jj < cols_; jj++)
+			{
+				x = V_T(jj, j);
+				z = V_T(jj, i);
+				V_T(jj, j) = (x * c) + (z * s);
+				V_T(jj, i) = (z * c) - (x * s);
+			}
+
+			z = pythagorean(f, h);
+			S(j , j) = z;
+
+			if (z)
+			{
+				z = 1.0 / z;
+				c = f * z;
+				s = h * z;
+			}
+
+			f = (c * g) + (s * y);
+			z = (c * y) - (s * g);
+
+			for (int jj = 0; jj < rows_; jj++)
+			{
+				y = U(jj, j);
+				z = U(jj, i);
+				U(jj, j) = (y * c) + (z * s);
+				U(jj, i) = (z * c) - (y * s);
+			}
+		}
+
+		rv1(1, l) = 0.0;
+		rv1(1, k) = f;
+		S(k, k) = x;
 	}
 }
 
