@@ -13,6 +13,7 @@
 namespace nlib
 {
 
+const int SVD_NUM_ITERATIONS = 30;
 const double QR_THRESHOLD = 0.0000000001;
 
 template<typename T, std::size_t ROWS, std::size_t COLS>
@@ -61,6 +62,8 @@ private:
 
 	// Default: store matrix in array, row-major form 
 	std::array<T, ROWS * COLS> mat_;
+
+	double pythagorean(double a, double b);
 };
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
@@ -337,15 +340,23 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	{
 		return;
 	}
-
-	int l = 0;
 	
+	int its = 0;
+	int flag = 0;
+	int l = 0;	
+	int nm = 0;
+
 	double scale = 0.0;
 	double anorm = 0.0;
+
+	double c = 0.0;
 	double f = 0.0;
 	double g = 0.0;
 	double h = 0.0;
 	double s = 0.0;
+	double x = 0.0;
+	double y = 0.0;
+	double z = 0.0;
 
 	Matrix<T, 1, COLS> rv1;
 
@@ -553,8 +564,104 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 		}	
 		++U(i, i);
 	}
-	// -------------------------------------------------------//
+	// ----------------------------------------------------------------//
+	
+	for (int k = cols_ - 1; k >= 0; k--)
+	{
+		for (its = 0; its < SVD_NUM_ITERATIONS; its++)
+		{
+			flag = 1;
 
+			for (int l = k; l >= 0; l--)
+			{
+				nm = l - 1;
+
+				if ((fabs(rv1(1, l)) + anorm) == anorm)
+				{
+					flag = 0;
+					break;
+				}
+
+				if ((fabs(S(nm, nm)) + anorm) == anorm) { break; }
+			}
+		}
+		
+		if (flag)
+		{
+			c = 0.0;
+			s = 1.0;
+
+			for (int i = l; i <= k; i++)
+			{
+				f = s * rv1(1, i);
+
+				if ((fabs(f) + anorm) != norm)
+				{
+					g = S(i, i);
+					h = pythagorean(f, g);
+					S(i, i) = h;
+					h = 1.0 / h;
+					c = g * h;
+					s = -f * h;
+
+					for (int j = 0; j < rows_; j++)
+					{
+						y = U(j, nm);
+						z = U(j, i);
+
+						U(j, nm) = (y * c) + (z * s);
+						U(j, i) = (z * c) - (y * s);
+					}
+				}
+			}
+		}
+		
+		z = S(k, k);
+
+		if (l == k)
+		{
+			// Make negative singular value non-negative
+			if (z < 0.0)
+			{
+				S(k , k) = -z;
+				for (int j = 0; j < cols_; j++)
+				{
+					V_T(j, k) = (-V_T(j, k));
+				}
+			}
+			break;
+		}
+
+		if (its >= SVD_NUM_ITERATIONS)
+		{
+			// NO CONVERGENCE
+			return;
+		}
+
+
+	}
+}
+
+template <typename T, std::size_t ROWS, std::size_t COLS>
+double Matrix<T, ROWS, COLS>::pythagorean(double a, double b)
+{
+	double at = fabs(a);
+	double bt = fabs(b);
+	double ct = 0.0;
+	double result = 0.0;
+
+	if (at > bt)
+	{
+		ct = bt / at;
+		result = at * sqrt(1.0 + (ct * ct));
+	}
+	else if (bt > 0.0)
+	{
+		ct = at / bt;
+		result = bt * sqrt(1.0 + (ct * ct));
+	}
+
+	return result;
 }
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
