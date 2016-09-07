@@ -13,7 +13,7 @@
 namespace nlib
 {
 
-const int SVD_NUM_ITERATIONS = 30;
+const int SVD_NUM_ITERATIONS = 50;
 const double QR_THRESHOLD = 0.0000000001;
 
 template<typename T, std::size_t ROWS, std::size_t COLS>
@@ -341,6 +341,10 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 		return;
 	}
 	
+	int i = 0;
+	int j = 0;
+	int jj = 0;
+	int k = 0;
 	int its = 0;
 	int flag = 0;
 	int l = 0;	
@@ -363,11 +367,11 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	U = *this;
 	
 	// Householder reduction into bidiagonal form
-	for (int i = 0; i < cols_; i++)
+	for (i = 0; i < cols_; i++)
 	{
-		l = i + 1;
+		l = i + 2;
 
-		rv1[i] = scale * g;
+		rv1(1, i) = scale * g;
 		
 		// Reset g, scale, s
 		scale = 0.0;
@@ -376,45 +380,40 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 
 		if (i < rows_)
 		{
-			for (int k = i; k < rows_; k++)
+			for (k = i; k < rows_; k++)
 			{
-				scale += fabs(U(k, i));
+				scale += std::fabs(U(k, i));
 			}
 
 			if (scale)
 			{
-				for (int k = i; k < rows_; k++)
+				for (k = i; k < rows_; k++)
 				{
 					U(k, i) = U(k, i) / scale;
 					s += U(k, i) * U(k, i);
 				}
 
 				f = U(i, i);
-				g = -copysign(sqrt(s), f);
-				h = f * g - s;
+				g = -std::copysign(sqrt(s), f);
+				h = (f * g) - s;
 				U(i, i) = f - g;
 
-				if (i != cols_ - 1)
+				for (j = l-1; j < cols_; j++)
 				{
-					for (int j = l; j < cols_; j++)
+					for (s = 0.0, k = i; k < rows_; k++)
 					{
-						s = 0.0;
-						
-						for (int k = i; k < rows_; k++)
-						{
-							s += U(k, i) * U(k, j); 
-						}
-						
-						f = s / h;
-						
-						for (int k = i; k < rows_; k++)
-						{
-							U(k, j) += f * U(k, i);
-						}
+						s += U(k, i) * U(k, j); 
+					}
+					
+					f = s / h;
+					
+					for (k = i; k < rows_; k++)
+					{
+						U(k, j) += f * U(k, i);
 					}
 				}
 
-				for (int k = i; k < rows_; k++)
+				for (k = i; k < rows_; k++)
 				{
 					U(k, i) = U(k, i) * scale;
 				}
@@ -427,83 +426,78 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 		g = 0.0;
 		s = 0.0;
 		
-		if (i < rows_ && i != cols_ - 1)
+		if (i + 1 <= rows_ && i + 1 != cols_)
 		{
-			for (int k = l; k < cols_; k++)
+			for (k = l - 1; k < cols_; k++)
 			{
-				scale += fabs(U(i, k));
+				scale += std::fabs(U(i, k));
 			}
 
 			if (scale)
 			{
-				for (int k = l; k < cols_; k++)
+				for (k = l - 1; k < cols_; k++)
 				{
 					U(i, k) = U(i, k) / scale;
 					s += U(i, k) * U(i, k);
 				}
 			
-				f = U(i, l);
-				g = -copysign(sqrt(s), f);
-				h = f * g - s;
-				U(i, l) = f - g;
+				f = U(i, l - 1);
+				g = -std::copysign(sqrt(s), f);
+				h = (f * g) - s;
+				U(i, l - 1) = f - g;
 
-				for (int k = l; k < cols_; k++)
+				for (k = l - 1; k < cols_; k++)
 				{
 					rv1(1, k) = U(i, k) / h;
 				}
 
-				if (i != rows_ - 1)
+				for (j = l - 1; j < rows_; j++)
 				{
-					for (int j = l; j < rows_; j++)
+					for (s = 0.0, k = l-1; k < cols_; k++)
 					{
-						s = 0.0;
-
-						for (int k = l; k < cols_; k++)
-						{
-							s += U(j, k) * U(i, k);
-						}
-						for (int k = l; k < cols_; k++)
-						{
-							U(j, k) += s * rv1(1, k);
-						}
+						s += U(j, k) * U(i, k);
 					}
+					for (k = l-1; k < cols_; k++)
+					{
+						U(j, k) += s * rv1(1, k);
+					}
+					
 				}
 
-				for (int k = l; k < cols_; k++)
+				for (int k = l - 1; k < cols_; k++)
 				{
 					U(i, k) = U(i, k) * scale;
 				}
 			}
 		}
-		anorm = max(anorm, (fabs(S(i, i)) + fabs(rv1(1, i))));
+		anorm = std::max(anorm, (std::fabs(S(i, i)) + std::fabs(rv1(1, i))));
 	}
 	// -------------------------------------------------------------- //
 	
 	// Accumulate left-hand / right-hand transformations	
-	for (int i = cols_ - 1; i >= 0; i--)
+	for (i = cols_ - 1; i >= 0; i--)
 	{
 		if (i < cols_ -1)
 		{
 			if (g)
 			{
-				for (int j = l; j < cols_; j++)
+				for (j = l; j < cols_; j++)
 				{
 					V_T(j, i) = (U(i, j) / U(i, l)) / g;
 				}
-				for (int j = l; j < cols_; j++)
+				for (j = l; j < cols_; j++)
 				{
-					s = 0.0;
-					for (int k = l; k < cols_; k++)
+					for (s = 0.0, k = l; k < cols_; k++)
 					{
 						s += U(i, k) * V_T(k, j);
 					}
-					for (int k = l; k < cols_; k++)
+					for (k = l; k < cols_; k++)
 					{
 						V_T(k, j) += s * V_T(k, i);
 					}
 				}
 			}
-			for (int j = l; j < cols_; j++)
+			for (j = l; j < cols_; j++)
 			{
 				V_T(i, j) = 0.0;
 				V_T(j, i) = 0.0;
@@ -514,50 +508,43 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 		l = i;
 	}
 	
-	for (int i = cols_ - 1; i >= 0; i--)
+	for (i = std::min(rows_, cols_) - 1; i >= 0; i--)
 	{
 		l = i + 1;
 		g = S(i, i);
 
-		if (i < cols_ - 1)
+		for (j = l; j < cols_; j++)
 		{
-			for (int j = l; j < cols_; j++)
-			{
-				U(i, j) = 0.0;
-			}
-		}	
+			U(i, j) = 0.0;	
+		}
+		
 		if (g)
 		{
 			g = 1.0 / g;
 			
-			if (i != rows_ - 1)
+			for (j = l; j < cols_; j++)
 			{
-				for (int j = l; j < cols_; j++)
+				for (s = 0.0, k = l; k < rows_; k++)
 				{
-					s = 0.0;
+					s += U(k, i) * U(k, j);
+				}
 					
-					for (int k = l; k < rows_; k++)
-					{
-						s += U(k, i) * U(k, j);
-					}
+				f = (s / U(i, i)) * g;
 					
-					f = (s / U(i, i)) * g;
-					
-					for (int k = l; k < rows_; k++)
-					{
-						U(k, j) += f * U(k, i);
-					}
+				for (k = i; k < rows_; k++)
+				{
+					U(k, j) += f * U(k, i);
 				}
 			}
 			
-			for (int j = i; j < rows_; j++)
+			for (j = i; j < rows_; j++)
 			{
 				U(j, i) = U(j, i) * g;
 			}
 		}
 		else
 		{
-			for (int j = i; j < rows_; j++)
+			for (j = i; j < rows_; j++)
 			{
 				U(j, i) = 0.0;
 			}
@@ -567,140 +554,140 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	// ----------------------------------------------------------------//
 	
 	// Diagonalize
-	for (int k = cols_ - 1; k >= 0; k--)
+	for (k = cols_ - 1; k >= 0; k--)
 	{
 		for (its = 0; its < SVD_NUM_ITERATIONS; its++)
 		{
 			flag = 1;
 
-			for (int l = k; l >= 0; l--)
+			for (l = k; l >= 0; l--)
 			{
 				nm = l - 1;
 
-				if ((fabs(rv1(1, l)) + anorm) == anorm)
+				if ((std::fabs(rv1(1, l)) + anorm) == anorm)
 				{
 					flag = 0;
 					break;
 				}
 
-				if ((fabs(S(nm, nm)) + anorm) == anorm) { break; }
+				if ((std::fabs(S(nm, nm)) + anorm) == anorm) { break; }
 			}
-		}
 		
-		if (flag)
-		{
-			c = 0.0;
-			s = 1.0;
-
-			for (int i = l; i <= k; i++)
+		
+			if (flag)
 			{
-				f = s * rv1(1, i);
+				c = 0.0;
+				s = 1.0;
 
-				if ((fabs(f) + anorm) != norm)
+				for (i = l; i <= k + 1; i++)
 				{
-					g = S(i, i);
-					h = pythagorean(f, g);
-					S(i, i) = h;
-					h = 1.0 / h;
-					c = g * h;
-					s = -f * h;
+					f = s * rv1(1, i);
 
-					for (int j = 0; j < rows_; j++)
+					if ((std::fabs(f) + anorm) != anorm)
 					{
-						y = U(j, nm);
-						z = U(j, i);
+						g = S(i, i);
+						h = pythagorean(f, g);
+						S(i, i) = h;
+						h = 1.0 / h;
+						c = g * h;
+						s = -f * h;
 
-						U(j, nm) = (y * c) + (z * s);
-						U(j, i) = (z * c) - (y * s);
+						for (j = 0; j < rows_; j++)
+						{
+							y = U(j, nm);
+							z = U(j, i);
+
+							U(j, nm) = (y * c) + (z * s);
+							U(j, i) = (z * c) - (y * s);
+						}
 					}
 				}
 			}
-		}
-		
-		z = S(k, k);
+			z = S(k, k);
 
-		if (l == k)
-		{
-			// Make negative singular value non-negative
-			if (z < 0.0)
+			if (l == k)
 			{
-				S(k , k) = -z;
-				for (int j = 0; j < cols_; j++)
+				// Make negative singular value non-negative
+				if (z < 0.0)
 				{
-					V_T(j, k) = (-V_T(j, k));
+					S(k , k) = -z;
+					for (j = 0; j < cols_; j++)
+					{
+						V_T(j, k) = (-V_T(j, k));
+					}
+				}
+				break;
+			}
+
+			if (its == SVD_NUM_ITERATIONS)
+			{
+				// NO CONVERGENCE
+				std::cout << "Early return, no convergence\n";
+				return;
+			}
+		
+			x = S(l, l);
+			nm = k - 1;
+			y = S(nm, nm);
+			g = rv1(1, nm);
+			h = rv1(1, k);
+			f = (((y - z) * (y + z)) + ((g - h) * (g + h))) / (2.0 * h * y);
+			g = pythagorean(f, 1.0);
+			f = (((x - z) * (x + z)) + (h * ((y / (f + std::copysign(g, f))) - h))) / x;
+
+			// QR transformation
+			c = 1.0;
+			s = 1.0;
+
+			for (j = l; j <= nm; j++)
+			{
+				i = j + 1;
+				g = rv1(1, i);
+				y = S(i, i);
+				h = s * g;
+				g = c * g;
+				z = pythagorean(f, h);
+				rv1(1, j) = z;
+				c = f / z;
+				s = h / z;
+				f = (x * c) + (g * s);
+				g = (g * c) - (x * s);
+				h = y * s;
+				y = y * c;
+			
+				for (jj = 0; jj < cols_; jj++)
+				{
+					x = V_T(jj, j);
+					z = V_T(jj, i);
+					V_T(jj, j) = (x * c) + (z * s);
+					V_T(jj, i) = (z * c) - (x * s);
+				}
+
+				z = pythagorean(f, h);
+				S(j , j) = z;
+
+				if (z)
+				{
+					z = 1.0 / z;
+					c = f * z;
+					s = h * z;
+				}
+
+				f = (c * g) + (s * y);
+				z = (c * y) - (s * g);
+	
+				for (jj = 0; jj < rows_; jj++)
+				{
+					y = U(jj, j);
+					z = U(jj, i);
+					U(jj, j) = (y * c) + (z * s);
+					U(jj, i) = (z * c) - (y * s);
 				}
 			}
-			break;
+			rv1(1, l) = 0.0;
+			rv1(1, k) = f;
+			S(k, k) = x;
 		}
-
-		if (its >= SVD_NUM_ITERATIONS)
-		{
-			// NO CONVERGENCE
-			return;
-		}
-		
-		x = S(l, l);
-		nm = k - 1;
-		y = S(nm, nm);
-		g = rv1(1, nm);
-		h = rv1(1, k);
-		f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
-		g = pythagorean(f, 1.0);
-		f = ((x - z) * (x + z) + h * ((y / (f + copysign(g, f))) - h)) / x;
-
-		// QR transformation
-		c = 1.0;
-		s = 1.0;
-
-		for (int j = l; j <= nm; j++)
-		{
-			int i = j + 1;
-			g = rv1(1, i);
-			y = S(i, i);
-			h = s * g;
-			g = c * g;
-			z = pythagorean(f, h);
-			rv1(1, j) = z;
-			c = f / z;
-			s = h / z;
-			f = (x * c) + (g * s);
-			g = (g * c) - (x * s);
-			h = y * s;
-			y = y * c;
-			
-			for (int jj = 0; jj < cols_; jj++)
-			{
-				x = V_T(jj, j);
-				z = V_T(jj, i);
-				V_T(jj, j) = (x * c) + (z * s);
-				V_T(jj, i) = (z * c) - (x * s);
-			}
-
-			z = pythagorean(f, h);
-			S(j , j) = z;
-
-			if (z)
-			{
-				z = 1.0 / z;
-				c = f * z;
-				s = h * z;
-			}
-
-			f = (c * g) + (s * y);
-			z = (c * y) - (s * g);
-
-			for (int jj = 0; jj < rows_; jj++)
-			{
-				y = U(jj, j);
-				z = U(jj, i);
-				U(jj, j) = (y * c) + (z * s);
-				U(jj, i) = (z * c) - (y * s);
-			}
-		}
-
-		rv1(1, l) = 0.0;
-		rv1(1, k) = f;
-		S(k, k) = x;
 	}
 }
 

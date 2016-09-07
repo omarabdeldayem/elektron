@@ -81,5 +81,30 @@ int main()
 	std::cout << "Matrix Q * R: \n";	
 	(Q * R).print(); 
 
+
+	std::cout << "SVDecomposition Start: \n" << "----------\n";
+	nlib::Matrix<double, 3, 2> a_svd;
+	nlib::Matrix<double, 3, 2> a_u;
+	nlib::Matrix<double, 2, 2> a_s;
+	nlib::Matrix<double, 2, 2> a_vt;
+	
+	a_svd.ones();
+	a_svd = a_svd * 2;
+	a_svd(0, 0) = 1;
+	a_svd(2, 1) = 1;
+
+
+	std::cout << "Matrix A: \n";
+	a_svd.print();
+	a_svd.svd(a_u, a_s, a_vt);
+
+	std::cout << "Matrix U: \n";
+	a_u.print();
+	std::cout << "Matrix S: \n";
+	a_s.print();
+	std::cout << "Matrix V_T: \n";
+	a_vt.print();
+	std::cout << "U * S * V_T: \n";
+	(a_u * a_s * a_vt).print();
 	return 0;
 }
