@@ -93,11 +93,10 @@ int main()
 	a_svd(0, 0) = 1;
 	a_svd(2, 1) = 1;
 
-
 	std::cout << "Matrix A: \n";
 	a_svd.print();
 	a_svd.svd(a_u, a_s, a_vt);
-
+	
 	std::cout << "Matrix U: \n";
 	a_u.print();
 	std::cout << "Matrix S: \n";

@@ -14,7 +14,8 @@ namespace nlib
 {
 
 const int SVD_NUM_ITERATIONS = 50;
-const double QR_THRESHOLD = 0.0000000001;
+const double QR_EPSILON = 0.0000000001;
+const double SVD_EPSILON = 1e-17;
 
 template<typename T, std::size_t ROWS, std::size_t COLS>
 class Matrix
@@ -31,7 +32,7 @@ public:
 	Matrix<T, ROWS, COLS> operator/(T scalar);
 	Matrix<T, ROWS, COLS> operator+(Matrix<T, ROWS, COLS> M);
 	Matrix<T, ROWS, COLS> operator-(Matrix<T, ROWS, COLS> M);
-	T& operator()(int r, int c) { return mat_[r * cols_ + c]; };
+	T& operator()(int r, int c);
 
 	template<std::size_t MROWS, std::size_t MCOLS>
 	void sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int c_i, int c_f);
@@ -168,6 +169,19 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
 
 }
 
+template <typename T, std::size_t ROWS, std::size_t COLS>
+T& Matrix<T, ROWS, COLS>::operator()(int r, int c)
+{
+	if (r < 0 || c < 0 || r >= rows_ || c >= cols_)
+	{
+		std::cout << "Attempted out of bounds access at (" << r << ", " << c << ")" << std::endl;
+	//	throw("OUT OF BOUNDS");
+	}
+//	else
+//	{
+		return mat_[r * cols_ + c];
+//	}
+}
 // Return submatrix from row i to row f, col i to col f exclusive
 // 
 template <typename T, std::size_t ROWS, std::size_t COLS>
@@ -279,7 +293,7 @@ void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>&
 
 		epsilon = sqrt(epsilon);
 
-		if (epsilon > QR_THRESHOLD)
+		if (epsilon > QR_EPSILON)
 		{
 			for (int i = j; i < rows_; i++) v(i, 0) /= epsilon;
 
@@ -336,11 +350,6 @@ void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>&
 template <typename T, std::size_t ROWS, std::size_t COLS>
 void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>& S, Matrix<T, COLS, COLS>& V_T)
 {
-	if (rows_ < cols_) 
-	{
-		return;
-	}
-	
 	int i = 0;
 	int j = 0;
 	int jj = 0;
@@ -363,7 +372,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	double z = 0.0;
 
 	Matrix<T, 1, COLS> rv1;
-
+	
 	U = *this;
 	
 	// Householder reduction into bidiagonal form
@@ -371,7 +380,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	{
 		l = i + 2;
 
-		rv1(1, i) = scale * g;
+		rv1(0, i) = scale * g;
 		
 		// Reset g, scale, s
 		scale = 0.0;
@@ -448,7 +457,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 
 				for (k = l - 1; k < cols_; k++)
 				{
-					rv1(1, k) = U(i, k) / h;
+					rv1(0, k) = U(i, k) / h;
 				}
 
 				for (j = l - 1; j < rows_; j++)
@@ -459,9 +468,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 					}
 					for (k = l-1; k < cols_; k++)
 					{
-						U(j, k) += s * rv1(1, k);
+						U(j, k) += s * rv1(0, k);
 					}
-					
 				}
 
 				for (int k = l - 1; k < cols_; k++)
@@ -470,7 +478,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 				}
 			}
 		}
-		anorm = std::max(anorm, (std::fabs(S(i, i)) + std::fabs(rv1(1, i))));
+		anorm = std::max(anorm, (std::fabs(S(i, i)) + std::fabs(rv1(0, i))));
 	}
 	// -------------------------------------------------------------- //
 	
@@ -504,7 +512,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			}
 		}
 		V_T(i, i) = 1.0;
-		g = rv1(1, i);
+		g = rv1(0, i);
 		l = i;
 	}
 	
@@ -556,7 +564,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	// Diagonalize
 	for (k = cols_ - 1; k >= 0; k--)
 	{
-		for (its = 0; its < SVD_NUM_ITERATIONS; its++)
+		for (its = 0; its <= SVD_NUM_ITERATIONS; its++)
 		{
 			flag = 1;
 
@@ -564,13 +572,16 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			{
 				nm = l - 1;
 
-				if ((std::fabs(rv1(1, l)) + anorm) == anorm)
+				if (l == 0 || std::fabs(rv1(0, l)) <= SVD_EPSILON * anorm)
 				{
 					flag = 0;
 					break;
 				}
 
-				if ((std::fabs(S(nm, nm)) + anorm) == anorm) { break; }
+				if (std::fabs(S(nm, nm)) <= SVD_EPSILON * anorm) 
+				{ 
+					break;
+			   	}
 			}
 		
 		
@@ -579,27 +590,27 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 				c = 0.0;
 				s = 1.0;
 
-				for (i = l; i <= k + 1; i++)
+				for (i = l; i < k + 1; i++)
 				{
-					f = s * rv1(1, i);
+					f = s * rv1(0, i);
+					rv1(0, i) = c * rv1(0, i);
+			
+					if (std::fabs(f) <= SVD_EPSILON * anorm) { break; }
+						
+					g = S(i, i);
+					h = pythagorean(f, g);
+					S(i, i) = h;
+					h = 1.0 / h;
+					c = g * h;
+					s = -f * h;
 
-					if ((std::fabs(f) + anorm) != anorm)
+					for (j = 0; j < rows_; j++)
 					{
-						g = S(i, i);
-						h = pythagorean(f, g);
-						S(i, i) = h;
-						h = 1.0 / h;
-						c = g * h;
-						s = -f * h;
+						y = U(j, nm);
+						z = U(j, i);
 
-						for (j = 0; j < rows_; j++)
-						{
-							y = U(j, nm);
-							z = U(j, i);
-
-							U(j, nm) = (y * c) + (z * s);
-							U(j, i) = (z * c) - (y * s);
-						}
+						U(j, nm) = (y * c) + (z * s);
+						U(j, i) = (z * c) - (y * s);
 					}
 				}
 			}
@@ -629,8 +640,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			x = S(l, l);
 			nm = k - 1;
 			y = S(nm, nm);
-			g = rv1(1, nm);
-			h = rv1(1, k);
+			g = rv1(0, nm);
+			h = rv1(0, k);
 			f = (((y - z) * (y + z)) + ((g - h) * (g + h))) / (2.0 * h * y);
 			g = pythagorean(f, 1.0);
 			f = (((x - z) * (x + z)) + (h * ((y / (f + std::copysign(g, f))) - h))) / x;
@@ -642,19 +653,19 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			for (j = l; j <= nm; j++)
 			{
 				i = j + 1;
-				g = rv1(1, i);
+				g = rv1(0, i);
 				y = S(i, i);
 				h = s * g;
 				g = c * g;
 				z = pythagorean(f, h);
-				rv1(1, j) = z;
+				rv1(0, j) = z;
 				c = f / z;
 				s = h / z;
 				f = (x * c) + (g * s);
 				g = (g * c) - (x * s);
 				h = y * s;
 				y = y * c;
-			
+				
 				for (jj = 0; jj < cols_; jj++)
 				{
 					x = V_T(jj, j);
@@ -662,7 +673,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 					V_T(jj, j) = (x * c) + (z * s);
 					V_T(jj, i) = (z * c) - (x * s);
 				}
-
+				
 				z = pythagorean(f, h);
 				S(j , j) = z;
 
@@ -684,8 +695,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 					U(jj, i) = (z * c) - (y * s);
 				}
 			}
-			rv1(1, l) = 0.0;
-			rv1(1, k) = f;
+			rv1(0, l) = 0.0;
+			rv1(0, k) = f;
 			S(k, k) = x;
 		}
 	}
@@ -694,20 +705,20 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 template <typename T, std::size_t ROWS, std::size_t COLS>
 double Matrix<T, ROWS, COLS>::pythagorean(double a, double b)
 {
-	double at = fabs(a);
-	double bt = fabs(b);
+	double absa = fabs(a);
+	double absb = fabs(b);
 	double ct = 0.0;
 	double result = 0.0;
 
-	if (at > bt)
+	if (absa > absb)
 	{
-		ct = bt / at;
-		result = at * sqrt(1.0 + (ct * ct));
+		ct = absb / absa;
+		result = absa * sqrt(1.0 + (ct * ct));
 	}
-	else if (bt > 0.0)
+	else if (absb > 0.0)
 	{
-		ct = at / bt;
-		result = bt * sqrt(1.0 + (ct * ct));
+		ct = absa / absb;
+		result = absb * sqrt(1.0 + (ct * ct));
 	}
 
 	return result;
