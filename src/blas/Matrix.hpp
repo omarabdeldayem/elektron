@@ -3,10 +3,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include <numeric>
 #include <vector>
 
@@ -17,12 +19,16 @@ const int SVD_NUM_ITERATIONS = 50;
 const double QR_EPSILON = 0.0000000001;
 const double SVD_EPSILON = 1e-17;
 
+
+enum MatInit { z, o, i };
+
 template<typename T, std::size_t ROWS, std::size_t COLS>
 class Matrix
 {
 public:
 	// CONSTRUCTORS
 	Matrix();
+	Matrix(MatInit m_init);
 	
 	// OPERATOR OVERLOADS
 	template<std::size_t MROWS, std::size_t MCOLS>
@@ -61,8 +67,11 @@ private:
 	int rows_;
 	int cols_;
 
-	// Default: store matrix in array, row-major form 
+#ifdef NLIB_USE_HEAP 
+	std::vector<T> mat_;
+#else
 	std::array<T, ROWS * COLS> mat_;
+#endif
 
 	double pythagorean(double a, double b);
 };
@@ -73,7 +82,29 @@ Matrix<T, ROWS, COLS>::Matrix()
 	rows_ = static_cast<int>(ROWS);
 	cols_ = static_cast<int>(COLS);
 
+#ifdef NLIB_USE_HEAP
+	mat_.resize(rows_ * cols_);
+#endif
+
 	this->zeros();
+}
+
+template <typename T, std::size_t ROWS, std::size_t COLS>
+Matrix<T, ROWS, COLS>::Matrix(MatInit m_init)
+{
+	rows_ = static_cast<int>(ROWS);
+	cols_ = static_cast<int>(COLS);
+
+#ifdef NLIB_USE_HEAP
+	mat_.resize(rows_ * cols_);
+#endif
+
+	switch(m_init)
+	{
+		case z : this->zeros(); break;
+		case o  : this->ones(); 	break;
+		case i   : this->eye();	break;
+	}
 }
 
 template <typename T, std::size_t ROWS, std::size_t COLS>
@@ -100,7 +131,7 @@ template <typename T, std::size_t ROWS, std::size_t COLS>
 Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator*(T scalar)
 {
 	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
-
+	
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
@@ -172,16 +203,10 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
 template <typename T, std::size_t ROWS, std::size_t COLS>
 T& Matrix<T, ROWS, COLS>::operator()(int r, int c)
 {
-	if (r < 0 || c < 0 || r >= rows_ || c >= cols_)
-	{
-		std::cout << "Attempted out of bounds access at (" << r << ", " << c << ")" << std::endl;
-	//	throw("OUT OF BOUNDS");
-	}
-//	else
-//	{
-		return mat_[r * cols_ + c];
-//	}
+	assert((r>=0) && (c>=0) && (r<rows_) && (c<cols_));
+	return mat_[r * cols_ + c];
 }
+
 // Return submatrix from row i to row f, col i to col f exclusive
 // 
 template <typename T, std::size_t ROWS, std::size_t COLS>
@@ -776,6 +801,6 @@ void Matrix<T, ROWS, COLS>::print()
 }
 
 
-}
+} // end of namespace nlib
 
 #endif 

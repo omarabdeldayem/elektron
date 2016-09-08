@@ -3,12 +3,12 @@
 
 #include <iostream>
 
+
 int main()
 {
 	// Test
 	std::cout << "Scalar Operations: \n" << "----------\n";
-	nlib::Matrix<int, 4, 4> x;
-	x.ones();
+	nlib::Matrix<int, 4, 4> x(nlib::o);
 	x.print();
 	std::cout << "Multiply by 5\n";
 	x = x * 5;
