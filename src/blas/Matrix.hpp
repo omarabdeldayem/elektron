@@ -409,7 +409,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 
 				for (j = l-1; j < cols_; j++)
 				{
-					for (s = 0.0, k = i; k < rows_; k++)
+					s = 0.0;
+					for (k = i; k < rows_; k++)
 					{
 						s += U(k, i) * U(k, j); 
 					}
@@ -426,7 +427,6 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 				{
 					U(k, i) = U(k, i) * scale;
 				}
-
 			}
 		}
 		S(i, i) = g * scale;
@@ -462,7 +462,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 
 				for (j = l - 1; j < rows_; j++)
 				{
-					for (s = 0.0, k = l-1; k < cols_; k++)
+					s = 0.0;
+					for (k = l-1; k < cols_; k++)
 					{
 						s += U(j, k) * U(i, k);
 					}
@@ -495,7 +496,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 				}
 				for (j = l; j < cols_; j++)
 				{
-					for (s = 0.0, k = l; k < cols_; k++)
+					s = 0.0;
+					for (k = l; k < cols_; k++)
 					{
 						s += U(i, k) * V_T(k, j);
 					}
@@ -532,6 +534,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			
 			for (j = l; j < cols_; j++)
 			{
+				s = 0.0;
 				for (s = 0.0, k = l; k < rows_; k++)
 				{
 					s += U(k, i) * U(k, j);
@@ -684,8 +687,8 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 					s = h * z;
 				}
 
-				f = (c * g) + (s * y);
-				z = (c * y) - (s * g);
+				f = c * g + s * y;
+				x = c * y - s * g;
 	
 				for (jj = 0; jj < rows_; jj++)
 				{
