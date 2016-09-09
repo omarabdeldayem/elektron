@@ -29,7 +29,10 @@ public:
 	// CONSTRUCTORS
 	Matrix();
 	Matrix(MatInit m_init);
-	
+	Matrix(const std::array<T_, R_ * C_>& arr);
+	Matrix(const T_* arr);
+//	Matrix(const Matrix<T_, R_, C_>& M); Leave until fully implemented
+
 	// OPERATOR OVERLOADS
 	template<std::size_t MR_, std::size_t MC_>
 	Matrix<T_, R_, MC_> operator*(Matrix<T_, MR_, MC_> M);
@@ -109,6 +112,25 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 		case i : this->eye();	break;
 	}
 }
+
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_>::Matrix(const std::array<T_, R_ * C_>& arr)
+{
+	// TODO
+}
+
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_>::Matrix(const T_* arr)
+{
+	// TODO
+}
+
+// Don't uncomment this until fully implemented, otherwise you'll segfault
+//template <typename T_, std::size_t R_, std::size_t C_>
+//Matrix<T_, R_, C_>::Matrix(const Matrix<T_, R_, C_>& M)
+//{
+	// TODO
+//}
 
 template <typename T_, std::size_t R_, std::size_t C_>
 template <std::size_t MR_, std::size_t MC_>
