@@ -22,7 +22,7 @@ const double SVD_EPSILON = 1e-17;
 
 enum MatInit { z, o, i };
 
-template<typename T, std::size_t ROWS, std::size_t COLS>
+template<typename T_, std::size_t R_, std::size_t C_>
 class Matrix
 {
 public:
@@ -31,31 +31,31 @@ public:
 	Matrix(MatInit m_init);
 	
 	// OPERATOR OVERLOADS
-	template<std::size_t MROWS, std::size_t MCOLS>
-	Matrix<T, ROWS, MCOLS> operator*(Matrix<T, MROWS, MCOLS> M);
+	template<std::size_t MR_, std::size_t MC_>
+	Matrix<T_, R_, MC_> operator*(Matrix<T_, MR_, MC_> M);
 	
-	Matrix<T, ROWS, COLS> operator*(T scalar);
-	Matrix<T, ROWS, COLS> operator/(T scalar);
-	Matrix<T, ROWS, COLS> operator+(Matrix<T, ROWS, COLS> M);
-	Matrix<T, ROWS, COLS> operator-(Matrix<T, ROWS, COLS> M);
-	T& operator()(int r, int c);
+	Matrix<T_, R_, C_> operator*(T_ scalar);
+	Matrix<T_, R_, C_> operator/(T_ scalar);
+	Matrix<T_, R_, C_> operator+(Matrix<T_, R_, C_> M);
+	Matrix<T_, R_, C_> operator-(Matrix<T_, R_, C_> M);
+	T_& operator()(int r, int c);
 
-	template<std::size_t MROWS, std::size_t MCOLS>
-	void sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int c_i, int c_f);
+	template<std::size_t MR_, std::size_t MC_>
+	void sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
 	inline int rdim() { return rows_; };
 	inline int cdim() { return cols_; };
 
 	// MATRIX OPERATIONS
-	T trace();
+	T_ trace();
 	double norm();
-	Matrix<T, COLS, ROWS> tpose();
+	Matrix<T_, C_, R_> tpose();
 
-	// MATRIX DECOMPOSITIONS
-	void lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U);
-	void qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R);		
-	void svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>& S, Matrix<T, COLS, COLS>& V_T);
+	// MAT_R_IX DEC_OMPOSIT_IONS
+	void lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U);
+	void qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R);		
+	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
 
 	// UTILITIES
 	void zeros();
@@ -68,19 +68,22 @@ private:
 	int cols_;
 
 #ifdef NLIB_USE_HEAP 
-	std::vector<T> mat_;
+	std::vector<T_> mat_;
 #else
-	std::array<T, ROWS * COLS> mat_;
+	std::array<T_, R_ * C_> mat_;
 #endif
 
+	// SVD UTILITIES
 	double pythagorean(double a, double b);
+	void svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
+
 };
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS>::Matrix()
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_>::Matrix()
 {
-	rows_ = static_cast<int>(ROWS);
-	cols_ = static_cast<int>(COLS);
+	rows_ = static_cast<int>(R_);
+	cols_ = static_cast<int>(C_);
 
 #ifdef NLIB_USE_HEAP
 	mat_.resize(rows_ * cols_);
@@ -89,11 +92,11 @@ Matrix<T, ROWS, COLS>::Matrix()
 	this->zeros();
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS>::Matrix(MatInit m_init)
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 {
-	rows_ = static_cast<int>(ROWS);
-	cols_ = static_cast<int>(COLS);
+	rows_ = static_cast<int>(R_);
+	cols_ = static_cast<int>(C_);
 
 #ifdef NLIB_USE_HEAP
 	mat_.resize(rows_ * cols_);
@@ -102,16 +105,16 @@ Matrix<T, ROWS, COLS>::Matrix(MatInit m_init)
 	switch(m_init)
 	{
 		case z : this->zeros(); break;
-		case o  : this->ones(); 	break;
-		case i   : this->eye();	break;
+		case o : this->ones(); 	break;
+		case i : this->eye();	break;
 	}
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-template <std::size_t MROWS, std::size_t MCOLS>
-Matrix<T, ROWS, MCOLS> Matrix<T, ROWS, COLS>::operator*(Matrix<T, MROWS, MCOLS> M)
+template <typename T_, std::size_t R_, std::size_t C_>
+template <std::size_t MR_, std::size_t MC_>
+Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M)
 {
-	Matrix<T, ROWS, MCOLS> res;
+	Matrix<T_, R_, MC_> res;
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -127,10 +130,10 @@ Matrix<T, ROWS, MCOLS> Matrix<T, ROWS, COLS>::operator*(Matrix<T, MROWS, MCOLS> 
 	return res;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator*(T scalar)
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar)
 {
-	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
+	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 	
 	for (int i = 0; i < rows_; i++)
 	{
@@ -143,10 +146,10 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator*(T scalar)
 	return res;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator/(T scalar)
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar)
 {
-	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
+	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 
 	for (int i = 0; i < rows_; i++)
 	{
@@ -159,14 +162,14 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator/(T scalar)
 	return res;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator+(Matrix<T, ROWS, COLS> M)
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M)
 {
 	if (rows_ != M.rdim() && cols_ != M.cdim()) {
-		// TODO: throw error	
+		// T_ODO: throw error	
 	}
 
-	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
+	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 	
 	for (int i = 0; i < rows_; i++)
 	{
@@ -179,14 +182,14 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator+(Matrix<T, ROWS, COLS> M)
 	return res;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M)
 {
 	if (rows_ != M.rdim() && cols_ != M.cdim()) {
-		// TODO: throw error	
+		// T_ODO: throw error	
 	}
 
-	Matrix<T, ROWS, COLS> res = Matrix<T, ROWS, COLS>();
+	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 	
 	for (int i = 0; i < rows_; i++)
 	{
@@ -200,20 +203,20 @@ Matrix<T, ROWS, COLS> Matrix<T, ROWS, COLS>::operator-(Matrix<T, ROWS, COLS> M)
 
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-T& Matrix<T, ROWS, COLS>::operator()(int r, int c)
+template <typename T_, std::size_t R_, std::size_t C_>
+T_& Matrix<T_, R_, C_>::operator()(int r, int c)
 {
 	assert((r>=0) && (c>=0) && (r<rows_) && (c<cols_));
 	return mat_[r * cols_ + c];
 }
 
-// Return submatrix from row i to row f, col i to col f exclusive
+// R_eturn submatrix from row i to row f, col i to col f exclusive
 // 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-template <std::size_t MROWS, std::size_t MCOLS>
-void Matrix<T, ROWS, COLS>::sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int c_i, int c_f)
+template <typename T_, std::size_t R_, std::size_t C_>
+template <std::size_t MR_, std::size_t MC_>
+void Matrix<T_, R_, C_>::sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, int c_f)
 {
-	if (static_cast<int>(MROWS) != (r_f - r_i) || static_cast<int>(MCOLS) != (c_f - c_i))
+	if (static_cast<int>(MR_) != (r_f - r_i) || static_cast<int>(MC_) != (c_f - c_i))
 	{
 		return;
 	}
@@ -227,9 +230,9 @@ void Matrix<T, ROWS, COLS>::sub(Matrix<T, MROWS, MCOLS> M, int r_i, int r_f, int
 	}
 }
 
-// Computes L_(2, 1) matrix norm 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-double Matrix<T, ROWS, COLS>::norm()
+// C_omputes L_(2, 1) matrix norm 
+template <typename T_, std::size_t R_, std::size_t C_>
+double Matrix<T_, R_, C_>::norm()
 {
 	double norm = 0;
 	
@@ -245,27 +248,27 @@ double Matrix<T, ROWS, COLS>::norm()
 	return norm;
 }
 		
-template <typename T, std::size_t ROWS, std::size_t COLS>
-Matrix<T, COLS, ROWS> Matrix<T, ROWS, COLS>::tpose()
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
 {
-	Matrix<T, COLS, ROWS> mat_T = Matrix<T, COLS, ROWS>();
-	for (int i = 0; i < mat_T.rdim(); i++)
+	Matrix<T_, C_, R_> mat_T_ = Matrix<T_, C_, R_>();
+	for (int i = 0; i < mat_T_.rdim(); i++)
 	{
-		for (int j = 0; j < mat_T.cdim(); j++)
+		for (int j = 0; j < mat_T_.cdim(); j++)
 		{
-			mat_T(i, j) = (*this)(j, i);
+			mat_T_(i, j) = (*this)(j, i);
 		}
 	}
 
-	return mat_T;
+	return mat_T_;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-T Matrix<T, ROWS, COLS>::trace()
+template <typename T_, std::size_t R_, std::size_t C_>
+T_ Matrix<T_, R_, C_>::trace()
 {
 	if (rows_ == cols_)
 	{
-		T sum = 0;
+		T_ sum = 0;
 		for (auto it_ = mat_.begin(); it_ < it_.end(); it_+=cols_+1)
 		{
 			sum += *it_;
@@ -275,9 +278,9 @@ T Matrix<T, ROWS, COLS>::trace()
 	return NULL;
 }
 
-// QR Decomposition using householder reflections
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>& R)
+// QR_ Decomposition using householder reflections
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R)
 {
 	// For numerical stability
 	double epsilon = 0.0;
@@ -286,10 +289,10 @@ void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>&
 	Q.eye();
 	R = *this;
 
-	Matrix<T, ROWS, 1> u; 
-	Matrix<T, ROWS, 1> v;
-	Matrix<T, ROWS, ROWS> P;
-   	Matrix<T, ROWS, ROWS> I;
+	Matrix<T_, R_, 1> u; 
+	Matrix<T_, R_, 1> v;
+	Matrix<T_, R_, R_> P;
+   	Matrix<T_, R_, R_> I;
 
 	I.eye();
 		
@@ -330,8 +333,8 @@ void Matrix<T, ROWS, COLS>::qrd(Matrix<T, ROWS, ROWS>& Q, Matrix<T, ROWS, COLS>&
 }
 
 // LU Decomposition via Dolittle algorithm
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>& U)
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U)
 {
 	for (int i = 0; i < rows_; i++) 
 	{
@@ -372,8 +375,8 @@ void Matrix<T, ROWS, COLS>::lud(Matrix<T, ROWS, COLS>& L, Matrix<T, ROWS, COLS>&
 	}
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>& S, Matrix<T, COLS, COLS>& V_T)
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T)
 {
 	int i = 0;
 	int j = 0;
@@ -396,7 +399,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 	double y = 0.0;
 	double z = 0.0;
 
-	Matrix<T, 1, COLS> rv1;
+	Matrix<T_, 1, C_> rv1;
 	
 	U = *this;
 	
@@ -407,7 +410,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 
 		rv1(0, i) = scale * g;
 		
-		// Reset g, scale, s
+		// R_eset g, scale, s
 		scale = 0.0;
 		g = 0.0;
 		s = 0.0;
@@ -674,7 +677,7 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			g = pythagorean(f, 1.0);
 			f = (((x - z) * (x + z)) + (h * ((y / (f + std::copysign(g, f))) - h))) / x;
 
-			// QR transformation
+			// QR_ transformation
 			c = 1.0;
 			s = 1.0;
 
@@ -728,10 +731,12 @@ void Matrix<T, ROWS, COLS>::svd(Matrix<T, ROWS, COLS>& U, Matrix<T, COLS, COLS>&
 			S(k, k) = x;
 		}
 	}
+
+	svd_reord(U, S, V_T);
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-double Matrix<T, ROWS, COLS>::pythagorean(double a, double b)
+template <typename T_, std::size_t R_, std::size_t C_>
+double Matrix<T_, R_, C_>::pythagorean(double a, double b)
 {
 	double absa = fabs(a);
 	double absb = fabs(b);
@@ -752,8 +757,98 @@ double Matrix<T, ROWS, COLS>::pythagorean(double a, double b)
 	return result;
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::zeros()
+// Sorts S s.t. s_0 > s_1 > ... > s_k
+// Also sorts corresponding cols of U and V by dec mag
+// Maximizes number of positive elements
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T)
+{
+	int inc = 1;
+	
+	Matrix<T_, R_, 1> su;
+	Matrix<T_, 1, C_> sv;
+
+	do { inc *= 3; inc++; } while (inc <= cols_);
+
+	do 
+	{
+		inc /= 3;
+
+		for (int i = inc; i < cols_; i++)
+		{
+			double sw = S(i, i);
+			
+			for (int k = 0; k < rows_; k++)
+			{
+				su(k, 0) = U(k, i);
+			}
+			for (int k = 0; k < cols_; k++)
+			{
+				sv(0, k) = V_T(k, i);
+			}
+			
+			int j = i;
+
+			while(S(j-inc, j-inc) < sw)
+			{
+				S(j, j) = S(j-inc, j-inc);
+
+				for (int k = 0; k < rows_; k++)
+				{
+					U(k, j) = U(k, j-inc);
+				}
+
+				for (int k = 0; k < cols_; k++)
+				{
+					V_T(k, j) = V_T(k, j-inc);
+				}
+
+				j -= inc;
+				
+				if (j < inc) break;
+			}
+			
+			S(j, j) = sw;
+
+			for (int k = 0; k < rows_; k++)
+			{
+				U(k, j) = su(k, 0);
+			}
+			for (int k = 0; k < cols_; k++)
+			{
+				V_T(k, j) = sv(0, k);
+			}
+		}
+	} while (inc > 1);
+	for (int k = 0; k < cols_; k++)
+	{
+		int s = 0;
+
+		for (int i = 0; i < rows_; i++)
+		{
+			if (U(i, k) < 0.0) { s++; }
+		}
+		for (int j = 0; j < cols_; j++)
+		{
+			if (V_T(j, k) < 0.0) { s++; }
+		}
+
+		if (s > (rows_ + cols_) / 2)
+		{
+			for (int i = 0; i < rows_; i++)
+			{
+				U(i, k) = - U(i, k);
+			}
+			for (int j = 0; j < cols_; j++)
+			{
+				V_T(j, k) = -V_T(j, k);
+			}
+		}
+	}
+}
+
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::zeros()
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
@@ -761,8 +856,8 @@ void Matrix<T, ROWS, COLS>::zeros()
 	}
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::ones()
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::ones()
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
@@ -770,8 +865,8 @@ void Matrix<T, ROWS, COLS>::ones()
 	}
 }
 
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::eye()
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::eye()
 {
 	for (int i = 0; i < rows_; i++)
 	{
@@ -783,12 +878,12 @@ void Matrix<T, ROWS, COLS>::eye()
 }
 
 // ------ DEBUG ------ //
-template <typename T, std::size_t ROWS, std::size_t COLS>
-void Matrix<T, ROWS, COLS>::print()
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::print()
 {
 	int i = 0;
 
-	for (T val : mat_)
+	for (T_ val : mat_)
 	{
 		i += 1;	
 		std::cout << std::setw(16) << val << " ";
