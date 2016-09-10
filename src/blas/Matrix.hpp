@@ -55,7 +55,7 @@ public:
 	double norm();
 	Matrix<T_, C_, R_> tpose();
 
-	// MAT_R_IX DEC_OMPOSIT_IONS
+	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U);
 	void qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R);		
 	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
@@ -116,13 +116,19 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix(const std::array<T_, R_ * C_>& arr)
 {
-	// TODO
+	rows_ = static_cast<int>(R_);
+	cols_ = static_cast<int>(C_);
+
+	mat_ = arr;
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix(const T_* arr)
 {
-	// TODO
+	rows_ = static_cast<int>(R_);
+	cols_ = static_cast<int>(C_);
+
+	std::copy(std::begin(arr), std::end(arr), std::begin(mat_));
 }
 
 // Don't uncomment this until fully implemented, otherwise you'll segfault
@@ -232,8 +238,7 @@ T_& Matrix<T_, R_, C_>::operator()(int r, int c)
 	return mat_[r * cols_ + c];
 }
 
-// R_eturn submatrix from row i to row f, col i to col f exclusive
-// 
+// Return submatrix from row i to row f, col i to col f exclusive
 template <typename T_, std::size_t R_, std::size_t C_>
 template <std::size_t MR_, std::size_t MC_>
 void Matrix<T_, R_, C_>::sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, int c_f)
@@ -252,7 +257,7 @@ void Matrix<T_, R_, C_>::sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, 
 	}
 }
 
-// C_omputes L_(2, 1) matrix norm 
+// Computes L_(2, 1) matrix norm 
 template <typename T_, std::size_t R_, std::size_t C_>
 double Matrix<T_, R_, C_>::norm()
 {
@@ -300,7 +305,7 @@ T_ Matrix<T_, R_, C_>::trace()
 	return NULL;
 }
 
-// QR_ Decomposition using householder reflections
+// QR Decomposition using householder reflections
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R)
 {
