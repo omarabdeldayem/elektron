@@ -1,5 +1,5 @@
-#ifndef MATRIX_H_
-#define	MATRIX_H_
+#ifndef ELEKTRON_MATRIX_H_
+#define	ELEKTRON_MATRIX_H_
 
 #include <algorithm>
 #include <array>
@@ -12,12 +12,12 @@
 #include <numeric>
 #include <vector>
 
-namespace nlib
+namespace elektron
 {
 
 const int SVD_NUM_ITERATIONS = 50;
-const double QR_EPSILON = 0.0000000001;
-const double SVD_EPSILON = 1e-17;
+const double QR_EPSILON = 1e-10;
+const double SVD_EPSILON = 1e-10;
 
 
 enum MatInit { z, o, i };
@@ -70,7 +70,7 @@ private:
 	int rows_;
 	int cols_;
 
-#ifdef NLIB_USE_HEAP 
+#ifdef ELEKTRON_USE_HEAP 
 	std::vector<T_> mat_;
 #else
 	std::array<T_, R_ * C_> mat_;
@@ -82,13 +82,18 @@ private:
 
 };
 
+// ALIAS DECLARATIONS
+template <typename T_, std::size_t C_> using RVec = Matrix<T_, 1, C_>;
+template <typename T_, std::size_t R_> using CVec = Matrix<T_, R_, 1>;
+
+// Empty constructor
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix()
 {
 	rows_ = static_cast<int>(R_);
 	cols_ = static_cast<int>(C_);
 
-#ifdef NLIB_USE_HEAP
+#ifdef ELEKTRON_USE_HEAP
 	mat_.resize(rows_ * cols_);
 #endif
 
@@ -101,7 +106,7 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 	rows_ = static_cast<int>(R_);
 	cols_ = static_cast<int>(C_);
 
-#ifdef NLIB_USE_HEAP
+#ifdef ELEKTRON_USE_HEAP
 	mat_.resize(rows_ * cols_);
 #endif
 
@@ -923,6 +928,6 @@ void Matrix<T_, R_, C_>::print()
 }
 
 
-} // end of namespace nlib
+} // end of namespace elektron
 
 #endif 

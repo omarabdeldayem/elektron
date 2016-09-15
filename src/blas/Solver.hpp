@@ -1,11 +1,11 @@
-#ifndef SOLVER_HPP_
-#define SOLVER_HPP_
+#ifndef ELEKTRON_SOLVER_HPP_
+#define ELEKTRON_SOLVER_HPP_
 
 #include <cstddef>
 
 #include "Matrix.hpp"
 
-namespace nlib
+namespace elektron
 {
 
 namespace solver
@@ -41,8 +41,8 @@ namespace solver
 		}	
 	}
 
-}
+} // End of namespace solver
 
-}
+} // End of namespace elektron
 
 #endif

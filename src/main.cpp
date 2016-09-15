@@ -8,7 +8,7 @@ int main()
 {
 	// Test
 	std::cout << "Scalar Operations: \n" << "----------\n";
-	nlib::Matrix<int, 4, 4> x(nlib::o);
+	elektron::Matrix<int, 4, 4> x(elektron::o);
 	x.print();
 	std::cout << "Multiply by 5\n";
 	x = x * 5;
@@ -20,8 +20,8 @@ int main()
 
 
 	std::cout << "Matrix Operations: \n" << "----------\n";
-	nlib::Matrix<int, 6, 4> y;
-	nlib::Matrix<int, 4, 6> yt;
+	elektron::Matrix<int, 6, 4> y;
+	elektron::Matrix<int, 4, 6> yt;
 	y.ones();
 	y(0, 2) = 3;
 	y(2, 3) = 5;
@@ -30,17 +30,17 @@ int main()
 	yt = y.tpose();
 	yt.print();
 	std::cout << "Multiplied: \n";
-	nlib::Matrix<int, 6, 6> prod = y * yt;
+	elektron::Matrix<int, 6, 6> prod = y * yt;
 	prod.print();
 	std::cout << "Sub-matrix: \n";
-	nlib::Matrix<int, 1, 4> y_sub;
+	elektron::Matrix<int, 1, 4> y_sub;
 	y.sub(y_sub, 0, 1, 0, 4);
 	y_sub.print();	
 	
 	std::cout << "LUDecomposition Start: \n" << "----------\n";
-	nlib::Matrix<double, 3, 3> m;
-	nlib::Matrix<double, 3, 3> m_l;
-	nlib::Matrix<double, 3, 3> m_u;
+	elektron::Matrix<double, 3, 3> m;
+	elektron::Matrix<double, 3, 3> m_l;
+	elektron::Matrix<double, 3, 3> m_u;
 	m.ones();
 //	m_l.ones();
 //	m_u.ones();
@@ -59,9 +59,9 @@ int main()
 	(m_l * m_u).print();
 
 	std::cout << "QRDecomposition Start: \n" << "----------\n";
-	nlib::Matrix<double, 3, 3> A;
-	nlib::Matrix<double, 3, 3> Q;
-   	nlib::Matrix<double, 3, 3> R;
+	elektron::Matrix<double, 3, 3> A;
+	elektron::Matrix<double, 3, 3> Q;
+   	elektron::Matrix<double, 3, 3> R;
 	A(0, 0) = 12; 
 	A(0, 1) = -51;
 	A(0, 2) = 4;
@@ -83,10 +83,10 @@ int main()
 
 
 	std::cout << "SVDecomposition Start: \n" << "----------\n";
-	nlib::Matrix<double, 3, 2> a_svd;
-	nlib::Matrix<double, 3, 2> a_u;
-	nlib::Matrix<double, 2, 2> a_s;
-	nlib::Matrix<double, 2, 2> a_vt;
+	elektron::Matrix<double, 3, 2> a_svd;
+	elektron::Matrix<double, 3, 2> a_u;
+	elektron::Matrix<double, 2, 2> a_s;
+	elektron::Matrix<double, 2, 2> a_vt;
 	
 	a_svd.ones();
 	a_svd = a_svd * 2;
