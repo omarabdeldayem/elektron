@@ -8,8 +8,6 @@
 #include <cstddef>
 #include <iostream>
 #include <iomanip>
-#include <limits>
-#include <numeric>
 #include <vector>
 
 namespace elektron
@@ -18,7 +16,6 @@ namespace elektron
 const int SVD_NUM_ITERATIONS = 50;
 const double QR_EPSILON = 1e-10;
 const double SVD_EPSILON = 1e-10;
-
 
 enum MatInit { z, o, i };
 
@@ -31,24 +28,22 @@ public:
 	Matrix(MatInit m_init);
 	Matrix(const std::array<T_, R_ * C_>& arr);
 	Matrix(const T_* arr);
-//	Matrix(const Matrix<T_, R_, C_>& M); Leave until fully implemented
 
 	// OPERATOR OVERLOADS
 	template<std::size_t MR_, std::size_t MC_>
-	Matrix<T_, R_, MC_> operator*(Matrix<T_, MR_, MC_> M);
-	
-	Matrix<T_, R_, C_> operator*(T_ scalar);
-	Matrix<T_, R_, C_> operator/(T_ scalar);
-	Matrix<T_, R_, C_> operator+(Matrix<T_, R_, C_> M);
-	Matrix<T_, R_, C_> operator-(Matrix<T_, R_, C_> M);
+	Matrix<T_, R_, MC_> operator*(Matrix<T_, MR_, MC_> M) const;
+	Matrix<T_, R_, C_> operator*(T_ scalar) const;
+	Matrix<T_, R_, C_> operator/(T_ scalar) const;
+	Matrix<T_, R_, C_> operator+(Matrix<T_, R_, C_> M) const;
+	Matrix<T_, R_, C_> operator-(Matrix<T_, R_, C_> M) const;
 	T_& operator()(int r, int c);
 
 	template<std::size_t MR_, std::size_t MC_>
 	void sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, int c_f);
 	
 	// PRIVATE MEMBER ACCESS METHODS
-	inline int rdim() { return rows_; };
-	inline int cdim() { return cols_; };
+	inline int rdim() const { return rows_; };
+	inline int cdim() const { return cols_; };
 
 	// MATRIX OPERATIONS
 	T_ trace();
@@ -136,16 +131,9 @@ Matrix<T_, R_, C_>::Matrix(const T_* arr)
 	std::copy(std::begin(arr), std::end(arr), std::begin(mat_));
 }
 
-// Don't uncomment this until fully implemented, otherwise you'll segfault
-//template <typename T_, std::size_t R_, std::size_t C_>
-//Matrix<T_, R_, C_>::Matrix(const Matrix<T_, R_, C_>& M)
-//{
-	// TODO
-//}
-
 template <typename T_, std::size_t R_, std::size_t C_>
 template <std::size_t MR_, std::size_t MC_>
-Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M)
+Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M) const
 {
 	Matrix<T_, R_, MC_> res;
 
@@ -164,7 +152,7 @@ Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M)
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar)
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar) const
 {
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 	
@@ -180,7 +168,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar)
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar)
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar) const
 {
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 
@@ -196,7 +184,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar)
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M)
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M) const
 {
 	if (rows_ != M.rdim() && cols_ != M.cdim()) {
 		// T_ODO: throw error	
@@ -216,11 +204,9 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M)
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M)
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M) const
 {
-	if (rows_ != M.rdim() && cols_ != M.cdim()) {
-		// T_ODO: throw error	
-	}
+	assert((R_ == rows_) && (C_==cols_));	
 
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
 	
