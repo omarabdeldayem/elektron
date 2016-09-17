@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -17,7 +18,7 @@ const int SVD_NUM_ITERATIONS = 50;
 const double QR_EPSILON = 1e-10;
 const double SVD_EPSILON = 1e-10;
 
-enum MatInit { z, o, i };
+enum MatInit { z, o, i, r };
 
 template<typename T_, std::size_t R_, std::size_t C_>
 class Matrix
@@ -49,6 +50,7 @@ public:
 	T_ trace();
 	double norm();
 	Matrix<T_, C_, R_> tpose();
+	Matrix<T_, R_, C_> inverse();
 
 	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U);
@@ -56,6 +58,7 @@ public:
 	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
 
 	// UTILITIES
+	void rand();
 	void zeros();
 	void ones();
 	void eye();
@@ -110,6 +113,8 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 		case z : this->zeros(); break;
 		case o : this->ones(); 	break;
 		case i : this->eye();	break;
+		case r : this->rand();	break;
+		default: this->zeros();	break;
 	}
 }
 
@@ -279,6 +284,48 @@ Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
 	}
 
 	return mat_T_;
+}
+
+// !!!This needs to be handled way better!!!
+// Need to implement either a general inverse algo
+// or implement as a template specialization for R_ = C_ = {2, 3, ...}
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::inverse()
+{
+	if (rows_ == 2 && cols_ == 2)
+	{
+		Matrix<T_, R_, C_> inv;
+		T_ det = (mat_[0] * mat_[3]) - (mat_[1] * mat_[2]);
+		inv(0, 0) = mat_[3];
+		inv(0, 1) = -mat_[1];
+		inv(1, 0) = -mat_[2];
+		inv(1, 1) = mat_[0];
+
+		return inv;
+	}
+	else if (rows_ == 3 && cols_ == 3)
+	{
+		Matrix<T_, R_, C_> inv;
+		T_ det = mat_[0] * (mat_[4]*mat_[8] - mat_[5]*mat_[7]) - mat_[1] * (mat_[3]*mat_[8] 
+				- mat_[5]*mat_[6]) + mat_[2] * (mat_[3]*mat_[7] - mat_[4]*mat_[6]);
+		
+		inv(0, 0) = mat_[4]*mat_[8] - mat_[7]*mat_[5];
+		inv(0, 1) = mat_[2]*mat_[7] - mat_[8]*mat_[1];
+		inv(0, 2) = mat_[1]*mat_[5] - mat_[4]*mat_[2];
+		inv(1, 0) = mat_[5]*mat_[6] - mat_[8]*mat_[3];
+		inv(1, 1) = mat_[0]*mat_[8] - mat_[6]*mat_[2];
+		inv(1, 2) = mat_[2]*mat_[3] - mat_[5]*mat_[0];
+		inv(2, 0) = mat_[3]*mat_[7] - mat_[6]*mat_[4];
+		inv(2, 1) = mat_[1]*mat_[6] - mat_[7]*mat_[0];
+		inv(2, 2) = mat_[0]*mat_[4] - mat_[3]*mat_[1];
+
+		return det * inv;
+	}
+	else
+	{
+		// Inverse not implemented for matrices > 3 x 3 (for now)
+		return NULL;
+	}
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
@@ -891,6 +938,18 @@ void Matrix<T_, R_, C_>::eye()
 		for (int j = 0; j < cols_; j++)
 		{
 			mat_[i * cols_ + j] =  (i == j) ? 1 : 0;
+		}
+	}
+}
+
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_>::rand()
+{
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			mat_[i * cols_ + j] = static_cast<T_>(std::rand() % 101);
 		}
 	}
 }
