@@ -1,11 +1,11 @@
 #ifndef INTEGRAL_IMAGE_H_
 #define INTEGRAL_IMAGE_H_
 
-#include "../blas/Matrix.hpp"
+#include "../math/Matrix.hpp"
 
 #include <cstddef>
 
-namespace nlib 
+namespace elektron 
 {
 namespace cv
 {
