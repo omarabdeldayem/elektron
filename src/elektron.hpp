@@ -7,5 +7,6 @@
 
 // FILTERS INCLUDES
 #include "filters/Kalman.hpp"
+#include "filters/EKalman.hpp"
 
 #endif
