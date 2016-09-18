@@ -2,8 +2,8 @@
 #define ELEKTRON_H_
 
 // BLAS INCLUDES
-#include "blas/Matrix.hpp"
-#include "blas/Solver.hpp"
+#include "math/Matrix.hpp"
+#include "math/Solver.hpp"
 
 // FILTERS INCLUDES
 #include "filters/Kalman.hpp"
