@@ -12,6 +12,9 @@ namespace elektron
 {
 
 const double HSV_H_THRESHOLD = 0.0001;
+const double RGB2GRAY_RCOEFF = 0.299;
+const double RGB2GRAY_GCOEFF = 0.587;
+const double RGB2GRAY_BCOEFF = 0.114;
 
 enum ImType = {RGB, HSV, HSL, HSI, GRAY};
 
@@ -29,7 +32,7 @@ public:
 	void to_HSV();
 	void to_HSL();
 	void to_HSI();
-	void to_BW();
+	void to_GRAY();
 
 	ImType type();
 
@@ -55,6 +58,7 @@ private:
 	void rgb2hsv();
 	void rgb2hsi();
 	void rgb2hsl();
+	void rgb2gray();
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
@@ -266,6 +270,70 @@ void Image<T_, R_, C_>::rgb2hsl()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
+void Image<T_, R_, C_>::hsl2rgb()
+{
+	double C;
+	double H;
+	double X;
+	double M;
+
+	for (int i = 0; i < rows_; i++)
+	{
+		for (int j = 0; j < cols_; j++)
+		{
+			C = (1 - std::fabs(2.0  * ch3_(i, j) - 1) * ch2_(i, j);
+			H = std::fmod(ch1_(i, j) / 60.0, 6);
+			X = C * (1 - std::fabs(std::fmod(H, 2) - 1));
+			M = ch3_(i, j) - C;
+			
+			if (0.0 <= H && H < 1.0)
+			{
+				ch1_(i, j) = C + M;
+				ch2_(i, j) = X + M;
+				ch3_(i, j) = 0;
+			}
+			else if (1.0 <= H && H < 2.0)
+			{
+				ch1_(i, j) = X + M;
+				ch2_(i, j) = C + M;
+				ch3_(i, j) = 0;
+			}
+			else if (2.0 <= H && H < 3.0)
+			{
+				ch1_(i, j) = 0;
+				ch2_(i, j) = C + M;
+				ch3_(i, j) = X + M;		
+			}
+			else if (3.0 <= H && H < 4.0)
+			{		
+				ch1_(i, j) = 0;
+				ch2_(i, j) = X + M;
+				ch3_(i, j) = C + M;		
+			}
+			else if (4.0 <= H && H < 5.0)
+			{		
+				ch1_(i, j) = X + M;
+				ch2_(i, j) = 0;
+				ch3_(i, j) = C + M;		
+			}
+			else if (5.0 <= H && H < 6.0)
+			{		
+				ch1_(i, j) = C + M;
+				ch2_(i, j) = 0;
+				ch3_(i, j) = X + M;		
+			}
+			else
+			{
+				ch1_(i, j) = M;
+				ch2_(i, j) = M;
+				ch3_(i, j) = M;		
+			}
+		}
+	}
+}
+
+
+template <typename T_, std::size_t R_, std::size_t C_>
 void Image<T_, R_, C_>::rgb2hsi()
 {
 	double M;
@@ -318,6 +386,14 @@ void Image<T_, R_, C_>::rgb2hsi()
 
 			ch3_(i, j) = static_cast<T_>((1/3) * (r + g + b);		
 	}
+}
+
+// Fills channel 1 with the grayscale values
+// Leaves channels 2 and 3 unchanged
+template <typename T_, std::size_t R_, std::size_t C_>
+void Image<T_, R_, C_>::rgb2gray()
+{
+	ch1_ = (RGB2GRAY_RCOEFF * ch1_) + (RGB2GRAY_GCOEFF * ch2_) + (RGB2GRAY_BCOEFF * ch3_);
 }
 
 }
