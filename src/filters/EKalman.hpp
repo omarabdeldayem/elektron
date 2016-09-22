@@ -19,7 +19,7 @@ public:
 
 	void predict(CVec<double, S_>& x, const CVec<double, S_>& u, const Matrix<double, S_, S_>& F, const Matrix<double, S_, S_>& B, const Matrix<double, S_, S_>& P, const Matrix<double, M_, M_>& Q);
 	void update(CVec<double, S_>& x, const CVec<double, M_>& z, const CVec<double, M_>& v, const Matrix<double, S_, S_>& H, const Matrix<double, S_, S_>& P, const Matrix<double, M_, M_>& R);
-	void update_jacobians(const Matrix<double, S_, S_>& F1, const Matrix<double, S_, S_>& F2, const Matrix<double, S_, S_>& H1, const Matrix<double, S_, S_>& H2, const RVec<double, S_>& deltas)
+	void update_jacobians(const Matrix<double, S_, S_>& F1, const Matrix<double, S_, S_>& F2, const Matrix<double, S_, S_>& H1, const Matrix<double, S_, S_>& H2, const RVec<double, S_>& deltas);
 
 private:
 	// Kalman gain

@@ -16,16 +16,16 @@ const double RGB2GRAY_RCOEFF = 0.299;
 const double RGB2GRAY_GCOEFF = 0.587;
 const double RGB2GRAY_BCOEFF = 0.114;
 
-enum ImType = {RGB, HSV, HSL, HSI, GRAY};
+enum ImType {RGB, HSV, HSL, HSI, GRAY};
 
-tempalte <typename T_, std::size_t R_, std::size_t C_>
+template <typename T_, std::size_t R_, std::size_t C_>
 class Image 
 {
 public:
 	// CONSTRUCTORS
 	Image();
-	Image(const std::array<T_, R_*S_>& ch1, const std::array<T_, R_*S_>& ch2, const std::array<T_, R_*S_>& ch3, ImType t);
-	Image(const Matrix<T_, R_, S_>& ch1, const Matrix<T_, R_, S_>& ch2, const Matrix<T_, R_, S_>& ch3, ImType t);
+	Image(const std::array<T_, R_*C_>& ch1, const std::array<T_, R_*C_>& ch2, const std::array<T_, R_*C_>& ch3, ImType t);
+	Image(const Matrix<T_, R_, C_>& ch1, const Matrix<T_, R_, C_>& ch2, const Matrix<T_, R_, C_>& ch3, ImType t);
 	
 	// CHANNEL CONVERSION INTERFACE
 	void to_RGB();
@@ -36,14 +36,14 @@ public:
 
 	ImType type();
 
-	inline int r() { return rows_ };
-	inline int c() { return cols_ };
+	inline int r() { return rows_; };
+	inline int c() { return cols_; };
 	 
 private:	
 	//  sizeof(T_)-bit IMAGE CHANNELS
-	Matrix<T_, R_, S_> ch1_;
-	Matrix<T_, R_, S_> ch2_;
-	Matrix<T_, R_, S_> ch3_;
+	Matrix<T_, R_, C_> ch1_;
+	Matrix<T_, R_, C_> ch2_;
+	Matrix<T_, R_, C_> ch3_;
 
 	// IMAGE TYPE
 	ImType im_t_;
@@ -59,7 +59,7 @@ private:
 	void rgb2hsi();
 	void rgb2hsl();
 	void rgb2gray();
-}
+};
 
 template <typename T_, std::size_t R_, std::size_t C_>
 Image<T_, R_, C_>::Image()
@@ -71,8 +71,8 @@ Image<T_, R_, C_>::Image()
 	im_t_ = RGB;
 }
 
-tempalte <typename T_, std::size_t R_, std::size_t C_>
-Image<T_, R_, C_>::Image(const std::array<T_, R_*S_>& ch1, const std::array<T_, R_*C_>& ch2, const std::array<T_, R_*C_>& ch3, ImType t)
+template <typename T_, std::size_t R_, std::size_t C_>
+Image<T_, R_, C_>::Image(const std::array<T_, R_*C_>& ch1, const std::array<T_, R_*C_>& ch2, const std::array<T_, R_*C_>& ch3, ImType t)
 	: im_t_(t)
 {
 	ch1_ = Matrix<T_, R_, C_>(ch1);
@@ -81,7 +81,7 @@ Image<T_, R_, C_>::Image(const std::array<T_, R_*S_>& ch1, const std::array<T_, 
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-Image<T_, R_, C_>::Image(const Matrix<T_, R_, S_>& ch1, const Matrix<T_, R_, S_>& ch2, const Matrix<T_, R_, S_>& ch3, ImType t)
+Image<T_, R_, C_>::Image(const Matrix<T_, R_, C_>& ch1, const Matrix<T_, R_, C_>& ch2, const Matrix<T_, R_, C_>& ch3, ImType t)
 	: im_t_(t),
 	  ch1_(ch1),
 	  ch2_(ch2),
@@ -153,7 +153,7 @@ void Image<T_, R_, C_>::rgb2hsv()
 			}
 
 			// Set V channel to Max
-			ch3_(i, j) = V;
+			ch3_(i, j) = M;
 		}
 	}
 }
@@ -265,7 +265,8 @@ void Image<T_, R_, C_>::rgb2hsl()
 			}
 
 			// Set V channel to Max
-			ch3_(i, j) = static_cast<T_>((0.5 * (M + m)));		
+			ch3_(i, j) = static_cast<T_>((0.5 * (M + m)));
+		}		
 	}
 }
 
@@ -281,7 +282,7 @@ void Image<T_, R_, C_>::hsl2rgb()
 	{
 		for (int j = 0; j < cols_; j++)
 		{
-			C = (1 - std::fabs(2.0  * ch3_(i, j) - 1) * ch2_(i, j);
+			C = (1 - std::fabs(2.0  * ch3_(i, j) - 1)) * ch2_(i, j);
 			H = std::fmod(ch1_(i, j) / 60.0, 6);
 			X = C * (1 - std::fabs(std::fmod(H, 2) - 1));
 			M = ch3_(i, j) - C;
@@ -384,7 +385,8 @@ void Image<T_, R_, C_>::rgb2hsi()
 				ch2_(i, j) = static_cast<T_>(C / M);
 			}
 
-			ch3_(i, j) = static_cast<T_>((1/3) * (r + g + b);		
+			ch3_(i, j) = static_cast<T_>((1/3) * (r + g + b));	
+		}	
 	}
 }
 
@@ -396,6 +398,6 @@ void Image<T_, R_, C_>::rgb2gray()
 	ch1_ = (RGB2GRAY_RCOEFF * ch1_) + (RGB2GRAY_GCOEFF * ch2_) + (RGB2GRAY_BCOEFF * ch3_);
 }
 
-}
+} // End of namespace elektron
 
 #endif

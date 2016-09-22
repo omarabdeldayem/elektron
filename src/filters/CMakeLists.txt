@@ -1,4 +1,0 @@
-file(GLOB FILTERS_SOURCES *.cpp)
-list(REMOVE_ITEM FILTERS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
-add_library(filters ${FILTERS_SOURCES})
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})

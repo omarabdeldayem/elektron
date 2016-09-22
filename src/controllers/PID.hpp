@@ -1,7 +1,7 @@
 #ifndef ELEKTRON_PCTRL_H_
 #define ELKETRON_PCTRL_H_
 
-#include "../math/CVec.hpp"
+#include "../math/Matrix.hpp"
 
 #include <cstddef>
 
@@ -15,14 +15,14 @@ public:
 	PID(const CVec<T_, R_>& s);
 	PID(const CVec<T_, R_>& s, const CVec<T_, R_>& k_p, const CVec<T_, R_>& k_i, const CVec<T_, R_>& k_d);
 
-	void ctrl(CVec<T_, R_>& U, const CVec<T_, R_>& x) const;
+	void ctrl(CVec<T_, R_>& U, const CVec<T_, R_>& x1, const CVec<T_, R_>& x2, const double dt) const;
 
 private:
 	CVec<T_, R_> set_point_;
 	CVec<T_, R_> K_p_;
 	CVec<T_, R_> K_i_;
 	CVec<T_, R_> K_d_;
-}
+};
 
 
 template <typename T_, std::size_t R_>
@@ -45,7 +45,7 @@ PID<T_, R_>::PID(const CVec<T_, R_>& s, const CVec<T_, R_>& k_p, const CVec<T_, 
 template <typename T_, std::size_t R_>
 void PID<T_, R_>::ctrl(CVec<T_, R_>& U, const CVec<T_, R_>& x1, const CVec<T_, R_>& x2, const double dt) const
 {
-	CVec<T_, R_> err = set_point_ - x;
+	CVec<T_, R_> err = set_point_ - x2;
 	CVec<T_, R_> err_i = 0;
 	CVec<T_, R_> err_d = 0;
 	
