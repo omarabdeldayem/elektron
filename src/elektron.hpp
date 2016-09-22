@@ -10,4 +10,10 @@
 #include "filters/Kalman.hpp"
 #include "filters/EKalman.hpp"
 
+// CONTROLLER INCLUDES
+#include "controllers/PID.hpp"
+
+// CV INCLUDES
+#include "cv/Image.hpp"
+
 #endif

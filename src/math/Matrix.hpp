@@ -49,6 +49,7 @@ public:
 	// MATRIX OPERATIONS
 	T_ trace();
 	double norm();
+	Matrix<T_, R_, C_> hadamard(const Matrix<T_, R_, C_>& M);
 	Matrix<T_, C_, R_> tpose();
 	Matrix<T_, R_, C_> inverse();
 
@@ -270,20 +271,36 @@ double Matrix<T_, R_, C_>::norm()
 	}
 	return norm;
 }
-		
+
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::hadamard(const Matrix<T_, R_, C_>& M) 
 {
-	Matrix<T_, C_, R_> mat_T_ = Matrix<T_, C_, R_>();
-	for (int i = 0; i < mat_T_.rdim(); i++)
+	Matrix<T_, R_, C_> res;
+
+	for (int i = 0; i < mat_.rdim(); i++)
 	{
-		for (int j = 0; j < mat_T_.cdim(); j++)
+		for (int j = 0; j < mat_.cdim(); j++)
 		{
-			mat_T_(i, j) = (*this)(j, i);
+			res(i, j) = (*this)(i, j) * M(i, j);
 		}
 	}
 
-	return mat_T_;
+	return res;
+}
+
+template <typename T_, std::size_t R_, std::size_t C_>
+Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
+{
+	Matrix<T_, C_, R_> res = Matrix<T_, C_, R_>();
+	for (int i = 0; i < res.rdim(); i++)
+	{
+		for (int j = 0; j < res.cdim(); j++)
+		{
+			res(i, j) = (*this)(j, i);
+		}
+	}
+
+	return res;
 }
 
 // !!!This needs to be handled way better!!!
