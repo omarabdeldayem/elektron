@@ -18,8 +18,16 @@ const int SVD_NUM_ITERATIONS = 50;
 const double QR_EPSILON = 1e-10;
 const double SVD_EPSILON = 1e-10;
 
+// Matrix-initializer type
+// z: zero matrix initialization
+// o: ones matrix initialization
+// i: identity matrix initialization
+// r: random 1-100 matrix initialization
 enum MatInit { z, o, i, r };
 
+// @template-param T_ Matrix element type 
+// @template param R_ Number of rows in matrix
+// @template param C_ Number of columns in matrix
 template<typename T_, std::size_t R_, std::size_t C_>
 class Matrix
 {
@@ -49,26 +57,31 @@ public:
 	// MATRIX OPERATIONS
 	T_ trace();
 	double norm();
-	Matrix<T_, R_, C_> hadamard(const Matrix<T_, R_, C_>& M);
 	Matrix<T_, C_, R_> tpose();
 	Matrix<T_, R_, C_> inverse();
+	Matrix<T_, R_, C_> hadamard(const Matrix<T_, R_, C_>& M);
 
+	template <std::size_t MR_, std::size_t MC_>
+	Matrix<T_, R_*MR_, C_*MC_> kronecker(const Matrix<T_, MR_, MC_>& M);
+	
 	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U);
 	void qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R);		
 	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
 
 	// UTILITIES
-	void rand();
-	void zeros();
-	void ones();
-	void eye();
+	void rand() const;
+	void rand(T_ max_num) const;
+	void zeros() const;
+	void ones() const;
+	void eye() const;
 	void print();
 
 private:
 	int rows_;
 	int cols_;
 
+	// Enforce stack-only matrices by default
 #ifdef ELEKTRON_USE_HEAP 
 	std::vector<T_> mat_;
 #else
@@ -82,10 +95,12 @@ private:
 };
 
 // ALIAS DECLARATIONS
+
 template <typename T_, std::size_t C_> using RVec = Matrix<T_, 1, C_>;
 template <typename T_, std::size_t R_> using CVec = Matrix<T_, R_, 1>;
 
-// Empty constructor
+// Default constructor
+// Default zero initialization
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix()
 {
@@ -99,6 +114,7 @@ Matrix<T_, R_, C_>::Matrix()
 	this->zeros();
 }
 
+// @param m_init Matrix initialization directive
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 {
@@ -119,6 +135,7 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 	}
 }
 
+// Create matrix from an existing std::array
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix(const std::array<T_, R_ * C_>& arr)
 {
@@ -128,6 +145,7 @@ Matrix<T_, R_, C_>::Matrix(const std::array<T_, R_ * C_>& arr)
 	mat_ = arr;
 }
 
+// Create matrix from a C-style array
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_>::Matrix(const T_* arr)
 {
@@ -137,6 +155,7 @@ Matrix<T_, R_, C_>::Matrix(const T_* arr)
 	std::copy(std::begin(arr), std::end(arr), std::begin(mat_));
 }
 
+// Matrix-matrix multiplication
 template <typename T_, std::size_t R_, std::size_t C_>
 template <std::size_t MR_, std::size_t MC_>
 Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M) const
@@ -157,6 +176,7 @@ Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M) const
 	return res;
 }
 
+// Element-wise matrix-scalar multiplication
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar) const
 {
@@ -173,6 +193,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar) const
 	return res;
 }
 
+// Element-wise matrix-scalar division
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar) const
 {
@@ -189,6 +210,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar) const
 	return res;
 }
 
+// Element-wise matrix-matrix addition
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M) const
 {
@@ -209,6 +231,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M) const
 	return res;
 }
 
+// Element-wise matrix-matrix subtraction
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M) const
 {
@@ -228,6 +251,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M) const
 
 }
 
+// Matrix access operator
 template <typename T_, std::size_t R_, std::size_t C_>
 T_& Matrix<T_, R_, C_>::operator()(int r, int c)
 {
@@ -254,7 +278,7 @@ void Matrix<T_, R_, C_>::sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, 
 	}
 }
 
-// Computes L_(2, 1) matrix norm 
+// Computes L(2, 1) matrix norm 
 template <typename T_, std::size_t R_, std::size_t C_>
 double Matrix<T_, R_, C_>::norm()
 {
@@ -272,6 +296,7 @@ double Matrix<T_, R_, C_>::norm()
 	return norm;
 }
 
+// Element-wise matrix-matrix multiplication (known as hadamard product)
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::hadamard(const Matrix<T_, R_, C_>& M) 
 {
@@ -288,6 +313,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::hadamard(const Matrix<T_, R_, C_>& M)
 	return res;
 }
 
+// Matrix transpose
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
 {
@@ -817,6 +843,8 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 	svd_reord(U, S, V_T);
 }
 
+// Returns sqrt(a^2 + b^2) 
+// This needs to be moved out of the Matrix class
 template <typename T_, std::size_t R_, std::size_t C_>
 double Matrix<T_, R_, C_>::pythagorean(double a, double b)
 {
@@ -930,7 +958,7 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::zeros()
+void Matrix<T_, R_, C_>::zeros() const
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
@@ -939,7 +967,7 @@ void Matrix<T_, R_, C_>::zeros()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::ones()
+void Matrix<T_, R_, C_>::ones() const
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
@@ -948,7 +976,7 @@ void Matrix<T_, R_, C_>::ones()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::eye()
+void Matrix<T_, R_, C_>::eye() const
 {
 	for (int i = 0; i < rows_; i++)
 	{
@@ -960,18 +988,24 @@ void Matrix<T_, R_, C_>::eye()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::rand()
+void Matrix<T_, R_, C_>::rand() const
 {
-	for (int i = 0; i < rows_; i++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
-		for (int j = 0; j < cols_; j++)
-		{
-			mat_[i * cols_ + j] = static_cast<T_>(std::rand() % 101);
-		}
+		*it_ = static_cast<T_>(std::rand() % 101);
 	}
 }
 
-// ------ DEBUG ------ //
+template <typename T_, std::size_t R_, std::size_t C_>
+void Matrix<T_, R_, C_::rand(T_ max_num) const
+{
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	{
+		*it_ = static_cast<T_>(std::rand() % (max_num + 1));
+	}
+}
+
+// Print matrix
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::print()
 {
@@ -990,6 +1024,6 @@ void Matrix<T_, R_, C_>::print()
 }
 
 
-} // end of namespace elektron
+} // End of namespace elektron
 
 #endif 
