@@ -34,8 +34,11 @@ public:
 	void to_HSI();
 	void to_GRAY();
 
-	ImType type();
+	// IMAGE UTILITIES
+	void iimg(Image<T_, R_, C_>& iimg_m) const;
 
+	// PRIVATE MEMBER ACCESS METHODS
+	ImType type();
 	inline int r() { return rows_; };
 	inline int c() { return cols_; };
 	 
@@ -108,6 +111,26 @@ void Image<T_, R_, C_>::to_HSV()
 			break;
 	}
 }
+
+// Computes the integral image (summed-area table) of image
+template <typename T_, std::size_t R_, std::size_t C_>
+void iimg(Image<T_, R_, C_>& iimg_m) const
+{
+	// Required initial values	
+	iimg_m(0, 0) = m(0, 0);
+	iimg_m(0, 0) = m(0, 0) + m(0, 1);
+	iimg_m(0, 0) = m(0, 0) + m(1, 0);
+
+	for (int i = 1; i < m.rdim(); i++)
+	{
+		for (int j = 1; j < m.cdim(); j++)
+		{
+			iimg_m(i, j) = m(i, j) + iimg_m(i-1, j) + iimg_m(i, j-1) -
+				iimg_m(i-1, j-1);
+		}
+	}
+}
+
 
 template <typename T_, std::size_t R_, std::size_t C_>
 void Image<T_, R_, C_>::rgb2hsv()
