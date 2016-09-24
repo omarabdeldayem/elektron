@@ -960,7 +960,7 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::zeros() 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = 0;
 	}
@@ -969,7 +969,7 @@ void Matrix<T_, R_, C_>::zeros()
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::ones() 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = 1;
 	}
@@ -990,7 +990,7 @@ void Matrix<T_, R_, C_>::eye()
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::rand() 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = static_cast<T_>(std::rand() % 101);
 	}
@@ -999,7 +999,7 @@ void Matrix<T_, R_, C_>::rand()
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::rand(T_ max_num) 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = static_cast<T_>(std::rand() % (max_num + 1));
 	}
