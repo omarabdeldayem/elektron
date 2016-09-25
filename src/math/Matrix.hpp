@@ -71,11 +71,11 @@ public:
 	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
 
 	// UTILITIES
-	void rand() const;
-	void rand(T_ max_num) const;
-	void zeros() const;
-	void ones() const;
-	void eye() const;
+	void rand();
+	void rand(T_ max_num);
+	void zeros();
+	void ones();
+	void eye();
 	void print();
 
 private:
@@ -959,25 +959,25 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::zeros() const
+void Matrix<T_, R_, C_>::zeros() 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = 0;
 	}
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::ones() const
+void Matrix<T_, R_, C_>::ones() 
 {
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = 1;
 	}
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::eye() const
+void Matrix<T_, R_, C_>::eye() 
 {
 	for (int i = 0; i < rows_; i++)
 	{
@@ -989,24 +989,24 @@ void Matrix<T_, R_, C_>::eye() const
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::rand() const
+void Matrix<T_, R_, C_>::rand() 
 {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<> dis(0.0, 1.0);
 
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = static_cast<T_>(dis(gen));
 	}
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_::rand(T_ max_num) const
+void Matrix<T_, R_, C_>::rand(T_ max_num) 
 {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<> dis(0.0, max_num);
 
-	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
+	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
 		*it_ = static_cast<T_>(dis(gen));
 	}

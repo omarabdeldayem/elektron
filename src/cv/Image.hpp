@@ -35,10 +35,14 @@ public:
 	void to_GRAY();
 
 	// IMAGE UTILITIES
-	void iimg(Image<T_, R_, C_>& iimg_m) const;
+	void iimg(Image<T_, R_, C_>& iimg_m);
 
 	// PRIVATE MEMBER ACCESS METHODS
-	ImType type();
+	Matrix<T_, R_, C_>& ch1() { return ch1_; };
+	Matrix<T_, R_, C_>& ch2() { return ch2_; };
+	Matrix<T_, R_, C_>& ch3() { return ch3_; };
+
+	ImType type() { return im_t_; };
 	inline int r() { return rows_; };
 	inline int c() { return cols_; };
 	 
@@ -62,6 +66,8 @@ private:
 	void rgb2hsi();
 	void rgb2hsl();
 	void rgb2gray();
+
+	void sumtable(const Matrix<T_, R_, C_>& m, Matrix<T_, R_, C_>& sum);
 };
 
 template <typename T_, std::size_t R_, std::size_t C_>
@@ -114,19 +120,34 @@ void Image<T_, R_, C_>::to_HSV()
 
 // Computes the integral image (summed-area table) of image
 template <typename T_, std::size_t R_, std::size_t C_>
-void iimg(Image<T_, R_, C_>& iimg_m) const
+void Image<T_, R_, C_>::iimg(Image<T_, R_, C_>& iimg_m)
+{
+	if (im_t_ == GRAY)
+	{
+		sumtable(ch1_, iimg_m.ch1());
+	}
+	else
+	{
+		sumtable(ch1_, iimg_m.ch1());
+		sumtable(ch2_, iimg_m.ch2());
+		sumtable(ch3_, iimg_m.ch3());
+	}
+}
+
+// NTS: This doesn't belong here - move
+template <typename T_, std::size_t R_, std::size_t C_>
+void Image<T_, R_, C_>::sumtable(const Matrix<T_, R_, C_>& m, Matrix<T_, R_, C_>& sum)
 {
 	// Required initial values	
-	iimg_m(0, 0) = m(0, 0);
-	iimg_m(0, 0) = m(0, 0) + m(0, 1);
-	iimg_m(0, 0) = m(0, 0) + m(1, 0);
-
+	sum(0, 0) = m(0, 0);
+	sum(0, 0) = m(0, 0) + m(0, 1);
+	sum(0, 0) = m(0, 0) + m(1, 0);
 	for (int i = 1; i < m.rdim(); i++)
 	{
 		for (int j = 1; j < m.cdim(); j++)
 		{
-			iimg_m(i, j) = m(i, j) + iimg_m(i-1, j) + iimg_m(i, j-1) -
-				iimg_m(i-1, j-1);
+			sum(i, j) = m(i, j) + sum(i-1, j) + sum(i, j-1) -
+				sum(i-1, j-1);
 		}
 	}
 }
