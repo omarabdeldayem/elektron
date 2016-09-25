@@ -11,7 +11,7 @@ namespace elektron
 template <typename T_>
 inline double deriv_newton(T_ y1, T_ y2, double delta)
 {
-	return static_cast<double>(y2 - y1)/delta;
+	return static_cast<double>((y2 - y1)/delta);
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>

@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <random>
 #include <vector>
 
 namespace elektron
@@ -990,18 +991,24 @@ void Matrix<T_, R_, C_>::eye() const
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::rand() const
 {
+	std::default_random_engine gen;
+	std::uniform_real_distribution<> dis(0.0, 1.0);
+
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
-		*it_ = static_cast<T_>(std::rand() % 101);
+		*it_ = static_cast<T_>(dis(gen));
 	}
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_::rand(T_ max_num) const
 {
+	std::default_random_engine gen;
+	std::uniform_real_distribution<> dis(0.0, max_num);
+
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); it_++)
 	{
-		*it_ = static_cast<T_>(std::rand() % (max_num + 1));
+		*it_ = static_cast<T_>(dis(gen));
 	}
 }
 
