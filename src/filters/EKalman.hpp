@@ -8,8 +8,6 @@
 
 namespace elektron
 {
-namespace filters
-{
 
 template <std::size_t S_, std::size_t M_>
 class EKalman 
@@ -89,7 +87,6 @@ void EKalman<S_, M_>::update(CVec<double, S_>& x, const CVec<double, M_>& z, con
 	P = (I - K * H_jacobian) * P; 
 }
 
-} // End of namespace filters	
 } // Eng of namespace elektron
 
 #endif

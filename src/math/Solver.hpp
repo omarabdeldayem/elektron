@@ -13,11 +13,11 @@ template <typename T, std::size_t ROWS, std::size_t COLS>
 void lu_solve(const Matrix<T, ROWS, COLS>& L, const Matrix<T, ROWS, COLS>& U, const Matrix<T, ROWS, 1> b, Matrix<T, ROWS, 1> x)
 {
 	Matrix<T, ROWS, 1> y_tmp;
-		
-	for (int i = 0; i < L.rdim(); i++)
+
+	for (int i = 0; i < L.r(); i++)
 	{
 		y_tmp(i, 0) = b(i, 0);
-		
+
 		for (int j = 0; j < i; j++)
 		{
 			y_tmp(i, 0) -= L(i, j) * y_tmp(j, 0);
@@ -26,17 +26,17 @@ void lu_solve(const Matrix<T, ROWS, COLS>& L, const Matrix<T, ROWS, COLS>& U, co
 		y_tmp(i, 0) /= L(i, i);
 	}
 
-	for (int i = L.rdim() - 1; i >= 0; i--)
+	for (int i = L.r() - 1; i >= 0; i--)
 	{
 		x(i, 0) = y_tmp(i, 0);
 
-		for (int j = i + 1; j < L.rdim(); j++)
+		for (int j = i + 1; j < L.r(); j++)
 		{
 			x(i, 0) -= U(i, j) * x(j, 0);
 		}
 
 		x(i, 0) /= U(i, i);
-	}	
+	}
 }
 
 } // End of namespace elektron

@@ -5,17 +5,26 @@
 
 namespace elektron
 {
-namespace filters
-{
 
 template <std::size_t S_, std::size_t M_>
-class Kalman 
+class Kalman
 {
 public:
 	Kalman();
 
-	void predict(CVec<double, S_>& x, const CVec<double, S_>& u, const Matrix<double, S_, S_>& F, const Matrix<double, S_, S_>& B, const Matrix<double, S_, S_>& P, const Matrix<double, M_, M_>& Q);
-	void update(CVec<double, S_>& x, const CVec<double, M_>& z, const CVec<double, M_>& v, const Matrix<double, S_, S_>& H, const Matrix<double, S_, S_>& P, const Matrix<double, M_, M_>& R);
+	void predict(CVec<double, S_>& x,
+							const CVec<double, S_>& u,
+							const Matrix<double, S_, S_>& F,
+							const Matrix<double, S_, S_>& B,
+							const Matrix<double, S_, S_>& P,
+							const Matrix<double, M_, M_>& Q);
+
+	void update(CVec<double, S_>& x,
+							const CVec<double, M_>& z,
+							const CVec<double, M_>& v,
+							const Matrix<double, S_, S_>& H,
+							const Matrix<double, S_, S_>& P,
+							const Matrix<double, M_, M_>& R);
 
 private:
 	// Kalman gain
@@ -24,7 +33,7 @@ private:
 };
 
 template <std::size_t S_, std::size_t M_>
-Kalman<S_, M_>::Kalman() 
+Kalman<S_, M_>::Kalman()
 {
 	I = Matrix<double, M_, M_>(i);
 	K = Matrix<double, S_, M_>();
@@ -41,7 +50,7 @@ void Kalman<S_, M_>::predict(CVec<double, S_>& x, const CVec<double, S_>& u, con
 {
 	// Predict new state based on state transition model and applied control
 	x = (F * x) + (B * u);
-	// Error in state estimamte 
+	// Error in state estimamte
 	P = (F * P * F.tpose()) + Q;
 }
 
@@ -54,12 +63,11 @@ void Kalman<S_, M_>::predict(CVec<double, S_>& x, const CVec<double, S_>& u, con
 template <std::size_t S_, std::size_t M_>
 void Kalman<S_, M_>::update(CVec<double, S_>& x, const CVec<double, M_>& z, const CVec<double, M_>& v, const Matrix<double, S_, S_>& H, const Matrix<double, S_, S_>& P, const Matrix<double, M_, M_>& R)
 {
-	K = P * H.tpose() * ((H * P * H.tpose()) + R).inverse(); 
+	K = P * H.tpose() * ((H * P * H.tpose()) + R).inverse();
 	x = x + K * (z - H * x);
-	P = (I - K * H) * P; 
+	P = (I - K * H) * P;
 }
 
-} // End of namespace filters	
 } // Eng of namespace elektron
 
 #endif

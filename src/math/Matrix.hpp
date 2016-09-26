@@ -26,7 +26,7 @@ const double SVD_EPSILON = 1e-10;
 // r: random 1-100 matrix initialization
 enum MatInit { z, o, i, r };
 
-// @template-param T_ Matrix element type 
+// @template-param T_ Matrix element type
 // @template param R_ Number of rows in matrix
 // @template param C_ Number of columns in matrix
 template<typename T_, std::size_t R_, std::size_t C_>
@@ -50,10 +50,10 @@ public:
 
 	template<std::size_t MR_, std::size_t MC_>
 	void sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, int c_f);
-	
+
 	// PRIVATE MEMBER ACCESS METHODS
-	inline int rdim() const { return rows_; };
-	inline int cdim() const { return cols_; };
+	inline int r() const { return rows_; };
+	inline int c() const { return cols_; };
 
 	// MATRIX OPERATIONS
 	T_ trace();
@@ -64,10 +64,10 @@ public:
 
 	template <std::size_t MR_, std::size_t MC_>
 	Matrix<T_, R_*MR_, C_*MC_> kronecker(const Matrix<T_, MR_, MC_>& M);
-	
+
 	// MATRIX DECOMPOSITIONS
 	void lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U);
-	void qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R);		
+	void qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R);
 	void svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T);
 
 	// UTILITIES
@@ -83,7 +83,7 @@ private:
 	int cols_;
 
 	// Enforce stack-only matrices by default
-#ifdef ELEKTRON_USE_HEAP 
+#ifdef ELEKTRON_USE_HEAP
 	std::vector<T_> mat_;
 #else
 	std::array<T_, R_ * C_> mat_;
@@ -165,7 +165,7 @@ Matrix<T_, R_, MC_> Matrix<T_, R_, C_>::operator*(Matrix<T_, MR_, MC_> M) const
 
 	for (int i = 0; i < rows_; i++)
 	{
-		for (int j = 0; j < res.cdim(); j++)
+		for (int j = 0; j < res.c(); j++)
 		{
 			for (int k = 0; k < cols_; k++)
 			{
@@ -182,7 +182,7 @@ template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar) const
 {
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
-	
+
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
@@ -190,7 +190,7 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator*(T_ scalar) const
 			res(i, j) = mat_[i * cols_ + j] * scalar;
 		}
 	}
-	
+
 	return res;
 }
 
@@ -215,12 +215,12 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator/(T_ scalar) const
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M) const
 {
-	if (rows_ != M.rdim() && cols_ != M.cdim()) {
-		// T_ODO: throw error	
+	if (rows_ != M.r() && cols_ != M.c()) {
+		// T_ODO: throw error
 	}
 
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
-	
+
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
@@ -236,10 +236,10 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator+(Matrix<T_, R_, C_> M) const
 template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, R_, C_> Matrix<T_, R_, C_>::operator-(Matrix<T_, R_, C_> M) const
 {
-	assert((R_ == rows_) && (C_==cols_));	
+	assert((R_ == rows_) && (C_==cols_));
 
 	Matrix<T_, R_, C_> res = Matrix<T_, R_, C_>();
-	
+
 	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < cols_; j++)
@@ -279,12 +279,12 @@ void Matrix<T_, R_, C_>::sub(Matrix<T_, MR_, MC_> M, int r_i, int r_f, int c_i, 
 	}
 }
 
-// Computes L(2, 1) matrix norm 
+// Computes L(2, 1) matrix norm
 template <typename T_, std::size_t R_, std::size_t C_>
 double Matrix<T_, R_, C_>::norm()
 {
 	double norm = 0;
-	
+
 	for (int i = 0; i < rows_; i++)
 	{
 		double col_sum = 0;
@@ -299,13 +299,13 @@ double Matrix<T_, R_, C_>::norm()
 
 // Element-wise matrix-matrix multiplication (known as hadamard product)
 template <typename T_, std::size_t R_, std::size_t C_>
-Matrix<T_, R_, C_> Matrix<T_, R_, C_>::hadamard(const Matrix<T_, R_, C_>& M) 
+Matrix<T_, R_, C_> Matrix<T_, R_, C_>::hadamard(const Matrix<T_, R_, C_>& M)
 {
 	Matrix<T_, R_, C_> res;
 
-	for (int i = 0; i < mat_.rdim(); i++)
+	for (int i = 0; i < M.r(); i++)
 	{
-		for (int j = 0; j < mat_.cdim(); j++)
+		for (int j = 0; j < M.c(); j++)
 		{
 			res(i, j) = (*this)(i, j) * M(i, j);
 		}
@@ -319,9 +319,9 @@ template <typename T_, std::size_t R_, std::size_t C_>
 Matrix<T_, C_, R_> Matrix<T_, R_, C_>::tpose()
 {
 	Matrix<T_, C_, R_> res = Matrix<T_, C_, R_>();
-	for (int i = 0; i < res.rdim(); i++)
+	for (int i = 0; i < res.r(); i++)
 	{
-		for (int j = 0; j < res.cdim(); j++)
+		for (int j = 0; j < res.c(); j++)
 		{
 			res(i, j) = (*this)(j, i);
 		}
@@ -350,9 +350,9 @@ Matrix<T_, R_, C_> Matrix<T_, R_, C_>::inverse()
 	else if (rows_ == 3 && cols_ == 3)
 	{
 		Matrix<T_, R_, C_> inv;
-		T_ det = mat_[0] * (mat_[4]*mat_[8] - mat_[5]*mat_[7]) - mat_[1] * (mat_[3]*mat_[8] 
+		T_ det = mat_[0] * (mat_[4]*mat_[8] - mat_[5]*mat_[7]) - mat_[1] * (mat_[3]*mat_[8]
 				- mat_[5]*mat_[6]) + mat_[2] * (mat_[3]*mat_[7] - mat_[4]*mat_[6]);
-		
+
 		inv(0, 0) = mat_[4]*mat_[8] - mat_[7]*mat_[5];
 		inv(0, 1) = mat_[2]*mat_[7] - mat_[8]*mat_[1];
 		inv(0, 2) = mat_[1]*mat_[5] - mat_[4]*mat_[2];
@@ -394,34 +394,34 @@ void Matrix<T_, R_, C_>::qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R)
 	// For numerical stability
 	double epsilon = 0.0;
 	double alpha = 0.0;
-	
+
 	Q.eye();
 	R = *this;
 
-	Matrix<T_, R_, 1> u; 
+	Matrix<T_, R_, 1> u;
 	Matrix<T_, R_, 1> v;
 	Matrix<T_, R_, R_> P;
    	Matrix<T_, R_, R_> I;
 
 	I.eye();
-		
-	for (int j = 0; j < cols_; j++) 
+
+	for (int j = 0; j < cols_; j++)
 	{
 		u.zeros();
 		v.zeros();
-		
+
 		epsilon = 0.0;
 
 		for (int i = j; i < rows_; i++)
 		{
 			u(i, 0) = R(i, j);
-			epsilon += u(i, 0) * u(i, 0);   	
+			epsilon += u(i, 0) * u(i, 0);
 		}
-		
+
 		epsilon = sqrt(epsilon);
 		alpha = copysign(epsilon, -u(j, 0)); // If you replace epsilon here with u.norm(), the Q matrix result is symmetric... figure out why
-		epsilon = 0.0;	
-		
+		epsilon = 0.0;
+
 		for (int i = j; i < rows_; i++)
 		{
 			v(i, 0) = i == j ? u(i, 0) + alpha : u(i, 0);
@@ -437,7 +437,7 @@ void Matrix<T_, R_, C_>::qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R)
 			P = I - (v * v.tpose()) * 2.0;
 			R = P * R;
 			Q = Q * P;
-		}	
+		}
 	}
 }
 
@@ -445,7 +445,7 @@ void Matrix<T_, R_, C_>::qrd(Matrix<T_, R_, R_>& Q, Matrix<T_, R_, C_>& R)
 template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U)
 {
-	for (int i = 0; i < rows_; i++) 
+	for (int i = 0; i < rows_; i++)
 	{
 		for (int j = 0; j < rows_; j++)
 		{
@@ -453,7 +453,7 @@ void Matrix<T_, R_, C_>::lud(Matrix<T_, R_, C_>& L, Matrix<T_, R_, C_>& U)
 			{
 				L(j, i) = 0;
 			}
-			else 
+			else
 			{
 				L(j, i) = (*this)(j, i);
 				for (int k = 0; k < i; k++)
@@ -493,7 +493,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 	int k = 0;
 	int its = 0;
 	int flag = 0;
-	int l = 0;	
+	int l = 0;
 	int nm = 0;
 
 	double scale = 0.0;
@@ -509,16 +509,16 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 	double z = 0.0;
 
 	Matrix<T_, 1, C_> rv1;
-	
+
 	U = *this;
-	
+
 	// Householder reduction into bidiagonal form
 	for (i = 0; i < cols_; i++)
 	{
 		l = i + 2;
 
 		rv1(0, i) = scale * g;
-		
+
 		// R_eset g, scale, s
 		scale = 0.0;
 		g = 0.0;
@@ -549,11 +549,11 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 					s = 0.0;
 					for (k = i; k < rows_; k++)
 					{
-						s += U(k, i) * U(k, j); 
+						s += U(k, i) * U(k, j);
 					}
-					
+
 					f = s / h;
-					
+
 					for (k = i; k < rows_; k++)
 					{
 						U(k, j) += f * U(k, i);
@@ -567,11 +567,11 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 			}
 		}
 		S(i, i) = g * scale;
-	
+
 		scale = 0.0;
 		g = 0.0;
 		s = 0.0;
-		
+
 		if (i + 1 <= rows_ && i + 1 != cols_)
 		{
 			for (k = l - 1; k < cols_; k++)
@@ -586,7 +586,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 					U(i, k) = U(i, k) / scale;
 					s += U(i, k) * U(i, k);
 				}
-			
+
 				f = U(i, l - 1);
 				g = -std::copysign(sqrt(s), f);
 				h = (f * g) - s;
@@ -619,8 +619,8 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 		anorm = std::max(anorm, (std::fabs(S(i, i)) + std::fabs(rv1(0, i))));
 	}
 	// -------------------------------------------------------------- //
-	
-	// Accumulate left-hand / right-hand transformations	
+
+	// Accumulate left-hand / right-hand transformations
 	for (i = cols_ - 1; i >= 0; i--)
 	{
 		if (i < cols_ -1)
@@ -654,7 +654,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 		g = rv1(0, i);
 		l = i;
 	}
-	
+
 	for (i = std::min(rows_, cols_) - 1; i >= 0; i--)
 	{
 		l = i + 1;
@@ -662,13 +662,13 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 
 		for (j = l; j < cols_; j++)
 		{
-			U(i, j) = 0.0;	
+			U(i, j) = 0.0;
 		}
-		
+
 		if (g)
 		{
 			g = 1.0 / g;
-			
+
 			for (j = l; j < cols_; j++)
 			{
 				s = 0.0;
@@ -676,15 +676,15 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 				{
 					s += U(k, i) * U(k, j);
 				}
-					
+
 				f = (s / U(i, i)) * g;
-					
+
 				for (k = i; k < rows_; k++)
 				{
 					U(k, j) += f * U(k, i);
 				}
 			}
-			
+
 			for (j = i; j < rows_; j++)
 			{
 				U(j, i) = U(j, i) * g;
@@ -696,11 +696,11 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 			{
 				U(j, i) = 0.0;
 			}
-		}	
+		}
 		++U(i, i);
 	}
 	// ----------------------------------------------------------------//
-	
+
 	// Diagonalize
 	for (k = cols_ - 1; k >= 0; k--)
 	{
@@ -718,13 +718,13 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 					break;
 				}
 
-				if (std::fabs(S(nm, nm)) <= SVD_EPSILON * anorm) 
-				{ 
+				if (std::fabs(S(nm, nm)) <= SVD_EPSILON * anorm)
+				{
 					break;
 			   	}
 			}
-		
-		
+
+
 			if (flag)
 			{
 				c = 0.0;
@@ -734,9 +734,9 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 				{
 					f = s * rv1(0, i);
 					rv1(0, i) = c * rv1(0, i);
-			
+
 					if (std::fabs(f) <= SVD_EPSILON * anorm) { break; }
-						
+
 					g = S(i, i);
 					h = pythagorean(f, g);
 					S(i, i) = h;
@@ -776,7 +776,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 				std::cout << "Early return, no convergence\n";
 				return;
 			}
-		
+
 			x = S(l, l);
 			nm = k - 1;
 			y = S(nm, nm);
@@ -805,7 +805,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 				g = (g * c) - (x * s);
 				h = y * s;
 				y = y * c;
-				
+
 				for (jj = 0; jj < cols_; jj++)
 				{
 					x = V_T(jj, j);
@@ -813,7 +813,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 					V_T(jj, j) = (x * c) + (z * s);
 					V_T(jj, i) = (z * c) - (x * s);
 				}
-				
+
 				z = pythagorean(f, h);
 				S(j , j) = z;
 
@@ -826,7 +826,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 
 				f = c * g + s * y;
 				x = c * y - s * g;
-	
+
 				for (jj = 0; jj < rows_; jj++)
 				{
 					y = U(jj, j);
@@ -844,7 +844,7 @@ void Matrix<T_, R_, C_>::svd(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matri
 	svd_reord(U, S, V_T);
 }
 
-// Returns sqrt(a^2 + b^2) 
+// Returns sqrt(a^2 + b^2)
 // This needs to be moved out of the Matrix class
 template <typename T_, std::size_t R_, std::size_t C_>
 double Matrix<T_, R_, C_>::pythagorean(double a, double b)
@@ -875,20 +875,20 @@ template <typename T_, std::size_t R_, std::size_t C_>
 void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S, Matrix<T_, C_, C_>& V_T)
 {
 	int inc = 1;
-	
+
 	Matrix<T_, R_, 1> su;
 	Matrix<T_, 1, C_> sv;
 
 	do { inc *= 3; inc++; } while (inc <= cols_);
 
-	do 
+	do
 	{
 		inc /= 3;
 
 		for (int i = inc; i < cols_; i++)
 		{
 			double sw = S(i, i);
-			
+
 			for (int k = 0; k < rows_; k++)
 			{
 				su(k, 0) = U(k, i);
@@ -897,7 +897,7 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 			{
 				sv(0, k) = V_T(k, i);
 			}
-			
+
 			int j = i;
 
 			while(S(j-inc, j-inc) < sw)
@@ -915,10 +915,10 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 				}
 
 				j -= inc;
-				
+
 				if (j < inc) break;
 			}
-			
+
 			S(j, j) = sw;
 
 			for (int k = 0; k < rows_; k++)
@@ -959,7 +959,7 @@ void Matrix<T_, R_, C_>::svd_reord(Matrix<T_, R_, C_>& U, Matrix<T_, C_, C_>& S,
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::zeros() 
+void Matrix<T_, R_, C_>::zeros()
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
@@ -968,7 +968,7 @@ void Matrix<T_, R_, C_>::zeros()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::ones() 
+void Matrix<T_, R_, C_>::ones()
 {
 	for (auto it_ = mat_.begin(); it_ < mat_.end(); ++it_)
 	{
@@ -977,7 +977,7 @@ void Matrix<T_, R_, C_>::ones()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::eye() 
+void Matrix<T_, R_, C_>::eye()
 {
 	for (int i = 0; i < rows_; i++)
 	{
@@ -989,7 +989,7 @@ void Matrix<T_, R_, C_>::eye()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::rand() 
+void Matrix<T_, R_, C_>::rand()
 {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<> dis(0.0, 1.0);
@@ -1001,7 +1001,7 @@ void Matrix<T_, R_, C_>::rand()
 }
 
 template <typename T_, std::size_t R_, std::size_t C_>
-void Matrix<T_, R_, C_>::rand(T_ max_num) 
+void Matrix<T_, R_, C_>::rand(T_ max_num)
 {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<> dis(0.0, max_num);
@@ -1020,9 +1020,9 @@ void Matrix<T_, R_, C_>::print()
 
 	for (T_ val : mat_)
 	{
-		i += 1;	
+		i += 1;
 		std::cout << std::setw(16) << val << " ";
-		
+
 		if (i % cols_ == 0) {
 			std::cout << "\n";
 		}
@@ -1033,4 +1033,4 @@ void Matrix<T_, R_, C_>::print()
 
 } // End of namespace elektron
 
-#endif 
+#endif

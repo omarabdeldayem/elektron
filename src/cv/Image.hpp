@@ -19,14 +19,14 @@ const double RGB2GRAY_BCOEFF = 0.114;
 enum ImType {RGB, HSV, HSL, HSI, GRAY};
 
 template <typename T_, std::size_t R_, std::size_t C_>
-class Image 
+class Image
 {
 public:
 	// CONSTRUCTORS
 	Image();
 	Image(const std::array<T_, R_*C_>& ch1, const std::array<T_, R_*C_>& ch2, const std::array<T_, R_*C_>& ch3, ImType t);
 	Image(const Matrix<T_, R_, C_>& ch1, const Matrix<T_, R_, C_>& ch2, const Matrix<T_, R_, C_>& ch3, ImType t);
-	
+
 	// CHANNEL CONVERSION INTERFACE
 	void to_RGB();
 	void to_HSV();
@@ -45,8 +45,8 @@ public:
 	ImType type() { return im_t_; };
 	inline int r() { return rows_; };
 	inline int c() { return cols_; };
-	 
-private:	
+
+private:
 	//  sizeof(T_)-bit IMAGE CHANNELS
 	Matrix<T_, R_, C_> ch1_;
 	Matrix<T_, R_, C_> ch2_;
@@ -138,13 +138,13 @@ void Image<T_, R_, C_>::iimg(Image<T_, R_, C_>& iimg_m)
 template <typename T_, std::size_t R_, std::size_t C_>
 void Image<T_, R_, C_>::sumtable(const Matrix<T_, R_, C_>& m, Matrix<T_, R_, C_>& sum)
 {
-	// Required initial values	
+	// Required initial values
 	sum(0, 0) = m(0, 0);
 	sum(0, 0) = m(0, 0) + m(0, 1);
 	sum(0, 0) = m(0, 0) + m(1, 0);
-	for (int i = 1; i < m.rdim(); i++)
+	for (int i = 1; i < m.r(); i++)
 	{
-		for (int j = 1; j < m.cdim(); j++)
+		for (int j = 1; j < m.c(); j++)
 		{
 			sum(i, j) = m(i, j) + sum(i-1, j) + sum(i, j-1) -
 				sum(i-1, j-1);
@@ -218,7 +218,7 @@ void Image<T_, R_, C_>::hsv2rgb()
 			H = std::fmod(ch1_(i, j) / 60.0, 6);
 			X = C * (1 - std::fabs(std::fmod(H, 2) - 1));
 			M = ch3_(i, j) - C;
-			
+
 			if (0.0 <= H && H < 1.0)
 			{
 				ch1_(i, j) = C + M;
@@ -235,31 +235,31 @@ void Image<T_, R_, C_>::hsv2rgb()
 			{
 				ch1_(i, j) = 0;
 				ch2_(i, j) = C + M;
-				ch3_(i, j) = X + M;		
+				ch3_(i, j) = X + M;
 			}
 			else if (3.0 <= H && H < 4.0)
-			{		
+			{
 				ch1_(i, j) = 0;
 				ch2_(i, j) = X + M;
-				ch3_(i, j) = C + M;		
+				ch3_(i, j) = C + M;
 			}
 			else if (4.0 <= H && H < 5.0)
-			{		
+			{
 				ch1_(i, j) = X + M;
 				ch2_(i, j) = 0;
-				ch3_(i, j) = C + M;		
+				ch3_(i, j) = C + M;
 			}
 			else if (5.0 <= H && H < 6.0)
-			{		
+			{
 				ch1_(i, j) = C + M;
 				ch2_(i, j) = 0;
-				ch3_(i, j) = X + M;		
+				ch3_(i, j) = X + M;
 			}
 			else
 			{
 				ch1_(i, j) = M;
 				ch2_(i, j) = M;
-				ch3_(i, j) = M;		
+				ch3_(i, j) = M;
 			}
 		}
 	}
@@ -268,7 +268,7 @@ void Image<T_, R_, C_>::hsv2rgb()
 template <typename T_, std::size_t R_, std::size_t C_>
 void Image<T_, R_, C_>::rgb2hsl()
 {
-	double M;	
+	double M;
 	double m;
 	double C;
 
@@ -310,7 +310,7 @@ void Image<T_, R_, C_>::rgb2hsl()
 
 			// Set V channel to Max
 			ch3_(i, j) = static_cast<T_>((0.5 * (M + m)));
-		}		
+		}
 	}
 }
 
@@ -330,7 +330,7 @@ void Image<T_, R_, C_>::hsl2rgb()
 			H = std::fmod(ch1_(i, j) / 60.0, 6);
 			X = C * (1 - std::fabs(std::fmod(H, 2) - 1));
 			M = ch3_(i, j) - C;
-			
+
 			if (0.0 <= H && H < 1.0)
 			{
 				ch1_(i, j) = C + M;
@@ -347,31 +347,31 @@ void Image<T_, R_, C_>::hsl2rgb()
 			{
 				ch1_(i, j) = 0;
 				ch2_(i, j) = C + M;
-				ch3_(i, j) = X + M;		
+				ch3_(i, j) = X + M;
 			}
 			else if (3.0 <= H && H < 4.0)
-			{		
+			{
 				ch1_(i, j) = 0;
 				ch2_(i, j) = X + M;
-				ch3_(i, j) = C + M;		
+				ch3_(i, j) = C + M;
 			}
 			else if (4.0 <= H && H < 5.0)
-			{		
+			{
 				ch1_(i, j) = X + M;
 				ch2_(i, j) = 0;
-				ch3_(i, j) = C + M;		
+				ch3_(i, j) = C + M;
 			}
 			else if (5.0 <= H && H < 6.0)
-			{		
+			{
 				ch1_(i, j) = C + M;
 				ch2_(i, j) = 0;
-				ch3_(i, j) = X + M;		
+				ch3_(i, j) = X + M;
 			}
 			else
 			{
 				ch1_(i, j) = M;
 				ch2_(i, j) = M;
-				ch3_(i, j) = M;		
+				ch3_(i, j) = M;
 			}
 		}
 	}
@@ -395,8 +395,8 @@ void Image<T_, R_, C_>::rgb2hsi()
 		{
 			r = ch1_(i, j);
 			g = ch2_(i, j);
-			b = ch3_(i, j);		
-			
+			b = ch3_(i, j);
+
 			// Max channel value
 			M = std::max(std::max(r, g), b);
 			// Min channel value
@@ -429,8 +429,8 @@ void Image<T_, R_, C_>::rgb2hsi()
 				ch2_(i, j) = static_cast<T_>(C / M);
 			}
 
-			ch3_(i, j) = static_cast<T_>((1/3) * (r + g + b));	
-		}	
+			ch3_(i, j) = static_cast<T_>((1/3) * (r + g + b));
+		}
 	}
 }
 
