@@ -1,4 +1,4 @@
-#include "elektron.hpp"
+#include "../elektron/elektron.hpp"
 
 #include <iostream>
 
@@ -7,7 +7,7 @@ int main()
 {
 	// Test
 	std::cout << "Scalar Operations: \n" << "----------\n";
-	elektron::Matrix<int, 4, 4> x(elektron::o);
+	elektron::Matrix<int, 4, 4> x(elektron::O);
 	x.print();
 	std::cout << "Multiply by 5\n";
 	x = x * 5;

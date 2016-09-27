@@ -8,4 +8,4 @@ set (ELEKTRON_VERSION_MAJOR 0)
 set (ELEKTRON_VERSION_MINOR 1)
 
 
-add_executable(elektron main.cpp)
+add_executable(elektron test.cpp)

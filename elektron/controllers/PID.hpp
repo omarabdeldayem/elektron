@@ -28,9 +28,9 @@ private:
 template <typename T_, std::size_t R_>
 PID<T_, R_>::PID(const CVec<T_, R_>& s) : set_point_(s)
 {
-	K_p_ = CVec<T_, R_>(i);
-	K_i_ = CVec<T_, R_>(i);
-	K_d_ = CVec<T_, R_>(i);
+	K_p_ = CVec<T_, R_>(I);
+	K_i_ = CVec<T_, R_>(I);
+	K_d_ = CVec<T_, R_>(I);
 }
 
 template <typename T_, std::size_t R_>
@@ -53,4 +53,5 @@ void PID<T_, R_>::ctrl(CVec<T_, R_>& U, const CVec<T_, R_>& x1, const CVec<T_, R
 }
 
 } // End of namespace elektron
+
 #endif

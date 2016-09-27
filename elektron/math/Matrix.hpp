@@ -24,7 +24,7 @@ const double SVD_EPSILON = 1e-10;
 // o: ones matrix initialization
 // i: identity matrix initialization
 // r: random 1-100 matrix initialization
-enum MatInit { z, o, i, r };
+enum MatInit { Z, O, I, R };
 
 // @template-param T_ Matrix element type
 // @template param R_ Number of rows in matrix
@@ -128,10 +128,10 @@ Matrix<T_, R_, C_>::Matrix(MatInit m_init)
 
 	switch(m_init)
 	{
-		case z : this->zeros(); break;
-		case o : this->ones(); 	break;
-		case i : this->eye();	break;
-		case r : this->rand();	break;
+		case Z : this->zeros(); break;
+		case O : this->ones(); 	break;
+		case I : this->eye();	break;
+		case R : this->rand();	break;
 		default: this->zeros();	break;
 	}
 }

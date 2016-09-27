@@ -73,9 +73,9 @@ private:
 template <typename T_, std::size_t R_, std::size_t C_>
 Image<T_, R_, C_>::Image()
 {
-	ch1_ = Matrix<T_, R_, C_>(z);
-	ch2_ = Matrix<T_, R_, C_>(z);
-	ch3_ = Matrix<T_, R_, C_>(z);
+	ch1_ = Matrix<T_, R_, C_>(Z);
+	ch2_ = Matrix<T_, R_, C_>(Z);
+	ch3_ = Matrix<T_, R_, C_>(Z);
 
 	im_t_ = RGB;
 }

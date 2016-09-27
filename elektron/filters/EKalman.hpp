@@ -47,8 +47,8 @@ private:
 template <std::size_t S_, std::size_t M_>
 EKalman<S_, M_>::EKalman() 
 {
-	I = Matrix<double, M_, M_>(i);
-	K = Matrix<double, S_, M_>(r);
+	I = Matrix<double, M_, M_>(I);
+	K = Matrix<double, S_, M_>(R);
 }
 
 template <std::size_t  S_, std::size_t M_>

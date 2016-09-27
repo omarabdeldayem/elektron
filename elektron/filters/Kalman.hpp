@@ -35,7 +35,7 @@ private:
 template <std::size_t S_, std::size_t M_>
 Kalman<S_, M_>::Kalman()
 {
-	I = Matrix<double, M_, M_>(i);
+	I = Matrix<double, M_, M_>(I);
 	K = Matrix<double, S_, M_>();
 }
 

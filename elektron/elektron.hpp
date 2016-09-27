@@ -5,6 +5,7 @@
 #include "math/Matrix.hpp"
 #include "math/Solver.hpp"
 #include "math/Integrals.hpp"
+#include "math/Derivatives.hpp"
 
 // FILTERS INCLUDES
 #include "filters/Kalman.hpp"
@@ -15,5 +16,6 @@
 
 // CV INCLUDES
 #include "cv/Image.hpp"
+#include "cv/Convolve.hpp"
 
 #endif
