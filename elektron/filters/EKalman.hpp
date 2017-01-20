@@ -54,8 +54,8 @@ EKalman<S_, M_>::EKalman()
 template <std::size_t  S_, std::size_t M_>
 void EKalman<S_, M_>::update_jacobians(const Matrix<double, S_, S_>& F1, const Matrix<double, S_, S_>& F2, const Matrix<double, S_, S_>& H1, const Matrix<double, S_, S_>& H2, const RVec<double, S_>& deltas)
 {
-	F_jacobian = update_jacobians(F1, F2, deltas);
-	H_jacobian = update_jacobians(H1, H2, deltas);
+	F_jacobian = jacob(F1, F2, deltas);
+	H_jacobian = jacob(H1, H2, deltas);
 }	
 
 // Matrix F - state transition model
