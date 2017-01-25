@@ -1,4 +1,7 @@
 # Elektron
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/15d01da01e8f4d20a130c06d8deb70a3)](https://www.codacy.com/app/omarabdeldayem/elektron?utm_source=github.com&utm_medium=referral&utm_content=omarabdeldayem/elektron&utm_campaign=badger)
+
 Dependency-free, header-only template library, suitable for robotics and embedded systems. By default, elektron won't make any heap allocations (other than in-place heap allocations at the start) which is appropriate for small matrices / if you can't use new/delete. However, it's a good idea to add `#define ELEKTRON_USE_HEAP` just before the elektron include for large matrices or if you're planning on using anything in cv or nn (possibly necessary dependeing on how large your matrices are).
 
 ## Structure
